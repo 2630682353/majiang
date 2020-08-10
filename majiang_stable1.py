@@ -483,7 +483,7 @@ for x in range(0, 1000):
 
 		list_player[index].mopai(desk1.list_tuple.pop())
 		list_player[index].show()
-		if list_player[index].score == 14:
+		if list_player[index].score >= 14:
 			print(list_player[index].name," hu le ####################################")
 			list_player.pop(index)
 			count_player = count_player -1
@@ -501,7 +501,7 @@ for x in range(0, 1000):
 						if index == i:
 							continue
 						list_player[i].mopai(pai)
-						if list_player[i].score == 14:
+						if list_player[i].score >= 14:
 							print("pai:",pai,"dian pao le #############################",list_player[i].name)
 							list_player[i].show()
 							list_player.pop(i)
