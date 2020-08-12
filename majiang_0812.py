@@ -1135,6 +1135,7 @@ for x in range(0, 100):
 				go_out = 0
 				while 1 == 1:
 					pai = list_player[index].dapai()
+					list_player[index].find_nen_gang()
 					desk1.list_river.append(pai)
 					list_player[index].show()
 					desk1.show()
