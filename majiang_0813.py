@@ -163,13 +163,8 @@ class player:
 		if self.ding == 't':
 			if self.list_ding.count('b') >= 2:
 				return self.t_duoque_b_guzhang()
-			else:
-				pai = self.t_duoque_b_guzhang()
-				if pai == 0:
-					return self.t_duoque_w_guzhang()
-				return pai
-
-			if self.list_ding.count('w') >= 2:
+		
+			elif self.list_ding.count('w') >= 2:
 				return self.t_duoque_w_guzhang()
 			else:
 				pai = self.t_duoque_w_guzhang()
@@ -179,13 +174,7 @@ class player:
 		if self.ding == 'w':
 			if self.list_ding.count('t') >= 2:
 				return self.w_duoque_t_guzhang()
-			else:
-				pai = self.w_duoque_t_guzhang()
-				if pai == 0:
-					return self.w_duoque_b_guzhang()
-				return pai
-
-			if self.list_ding.count('b') >= 2:
+			elif self.list_ding.count('b') >= 2:
 				return self.w_duoque_b_guzhang()
 			else:
 				pai = self.w_duoque_b_guzhang()
@@ -196,13 +185,7 @@ class player:
 		if self.ding == 'b':
 			if self.list_ding.count('t') >= 2:
 				return self.b_duoque_t_guzhang()
-			else:
-				pai = self.b_duoque_t_guzhang()
-				if pai == 0:
-					return self.b_duoque_w_guzhang()
-				return pai
-
-			if self.list_ding.count('w') >= 2:
+			elif self.list_ding.count('w') >= 2:
 				return self.b_duoque_w_guzhang()
 			else:
 				pai = self.b_duoque_w_guzhang()
