@@ -172,7 +172,7 @@ class player:
 				if pai == 0:
 					return self.t_duoque_b_guzhang()
 				return pai
-		if self.ding == 'w':
+		elif self.ding == 'w':
 			if self.list_ding.count('t') >= 2:
 				pai = self.w_duoque_t_guzhang()
 				if pai == 0:
@@ -185,7 +185,7 @@ class player:
 					return self.w_duoque_t_guzhang()
 				return pai
 			
-		if self.ding == 'b':
+		elif self.ding == 'b':
 			if self.list_ding.count('t') >= 2:
 				pai = self.b_duoque_t_guzhang()
 				if pai == 0:
