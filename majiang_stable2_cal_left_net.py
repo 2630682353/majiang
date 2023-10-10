@@ -510,9 +510,16 @@ for x in range(0, 100):
 
 	for i in range(0,4):
 		list_player[i].ding_sure()
-		desk1.list_ding.append(list_player[i].ding)
 
+	
+	send_data['type'] = "start"
+	
+	recv_data = conn.recv(1024)
+	recv_data = socket_test.get_data(recv_data)
+	print("recv_data:", recv_data)
+	socket_test.send_msg(conn, bytes(json.dumps(send_data), encoding="utf-8"))
 
+	str = input("\n")
 	index = 0
 	count_player = 4
 	while len(desk1.list_tuple)>0 and len(list_player) > 0:
