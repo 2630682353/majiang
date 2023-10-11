@@ -19,7 +19,7 @@ class desk:
 
 
 class player:
-	list_t = [];list_w = [];list_b= []; list_hope_pai = [];
+	list_t = [];list_w = [];list_b= []; list_hope_pai = []; list_river = [];
 	yipeng = 0; yipeng_score = 0; nenpeng = []; hope_score = 0; have_peng = []
 	one_xiang_ting = [];xia_jiao = 0; list_ding = []; nengang = []; have_gang = []
 	score = 0; ding = 't'; value = 100; mo = 0; da = 0;user_desk = desk();max_score_pai_num = 0

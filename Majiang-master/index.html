@@ -71,6 +71,7 @@
     <img src="img/pai.gif">
     <br>
 </div>
+<input type='button' onclick="go_next()" value="go"/>
 
 <div id="game">
 
@@ -266,18 +267,26 @@
         {
             case 1:
                 if (pos == 'shou'){
-                        $(".shoupai.main").children(".bingpai").empty();
+                    $(".shoupai.main").children(".bingpai").empty();
                     for (i=0;i<arr.length;i++)
                         $(".shoupai.main").children(".bingpai").append(get_pai(arr[i]));
                 }
                 else if (pos == 'mo')
                     $(".shoupai.main").children(".bingpai").append(get_mo(arr));
-                else if (pos == 'da')
-                    $(".he.main").children(".dapai").append(get_pai(arr));
-                else if (pos == 'peng')
-                    $(".shoupai.main").children(".fulou").append(get_peng(arr));
+                else if (pos == 'da') {
+                    $(".he.main").children(".dapai").empty();
+                    for (i=0;i<arr.length;i++)
+                        $(".he.main").children(".dapai").append(get_pai(arr[i]));
+                }
+                else if (pos == 'peng') {
+                    $(".shoupai.main").children(".fulou").empty();
+                    for (i=0;i<arr.length;i++)
+                        $(".shoupai.main").children(".fulou").append(get_peng(arr[i]));
+                }
                 else if (pos == 'gang')
-                    $(".shoupai.main").children(".fulou").append(get_gang(arr));
+                    $(".shoupai.main").children(".fulou").empty();
+                    for (i=0;i<arr.length;i++)
+                        $(".shoupai.main").children(".fulou").append(get_gang(arr[i]));
                 break;
             case 2:
                 if (pos == 'shou'){
@@ -287,12 +296,20 @@
                 }
                 else if (pos == 'mo')
                     $(".shoupai.xiajia").children(".bingpai").append(get_mo(arr));
-                else if (pos == 'da')
-                    $(".he.xiajia").children(".dapai").append(get_pai(arr));
-                else if (pos == 'peng')
-                    $(".shoupai.xiajia").children(".fulou").append(get_peng(arr));
+                else if (pos == 'da') {
+                    $(".he.xiajia").children(".dapai").empty();
+                    for (i=0;i<arr.length;i++)
+                        $(".he.xiajia").children(".dapai").append(get_pai(arr[i]));
+                }
+                else if (pos == 'peng') {
+                    $(".shoupai.xiajia").children(".fulou").empty();
+                    for (i=0;i<arr.length;i++)
+                        $(".shoupai.xiajia").children(".fulou").append(get_peng(arr[i]));
+                }
                 else if (pos == 'gang')
-                    $(".shoupai.xiajia").children(".fulou").append(get_gang(arr));
+                    $(".shoupai.xiajia").children(".fulou").empty();
+                    for (i=0;i<arr.length;i++)
+                        $(".shoupai.xiajia").children(".fulou").append(get_gang(arr[i]));
 
                 break;
             case 3:
@@ -303,12 +320,20 @@
                 }
                 else if (pos == 'mo')
                     $(".shoupai.duimian").children(".bingpai").append(get_mo(arr));
-                else if (pos == 'da')
-                    $(".he.duimian").children(".dapai").append(get_pai(arr));
-                else if (pos == 'peng')
-                    $(".shoupai.duimian").children(".fulou").append(get_peng(arr));
+                else if (pos == 'da') {
+                    $(".he.duimian").children(".dapai").empty();
+                    for (i=0;i<arr.length;i++)
+                        $(".he.duimian").children(".dapai").append(get_pai(arr[i]));
+                }
+                else if (pos == 'peng') {
+                    $(".shoupai.duimian").children(".fulou").empty();
+                    for (i=0;i<arr.length;i++)
+                        $(".shoupai.duimian").children(".fulou").append(get_peng(arr[i]));
+                }
                 else if (pos == 'gang')
-                    $(".shoupai.duimian").children(".fulou").append(get_gang(arr));
+                    $(".shoupai.duimian").children(".fulou").empty();
+                    for (i=0;i<arr.length;i++)
+                        $(".shoupai.duimian").children(".fulou").append(get_gang(arr[i]));
                 break;
             case 4:
                 if (pos == 'shou'){
@@ -318,12 +343,20 @@
                 }
                 else if (pos == 'mo')
                     $(".shoupai.shangjia").children(".bingpai").append(get_mo(arr));
-                else if (pos == 'da')
-                    $(".he.shangjia").children(".dapai").append(get_pai(arr));
-                else if (pos == 'peng')
-                    $(".shoupai.shangjia").children(".fulou").append(get_peng(arr));
+                else if (pos == 'da') {
+                    $(".he.shangjia").children(".dapai").empty();
+                    for (i=0;i<arr.length;i++)
+                        $(".he.shangjia").children(".dapai").append(get_pai(arr[i]));
+                }
+                else if (pos == 'peng') {
+                    $(".shoupai.shangjia").children(".fulou").empty();
+                    for (i=0;i<arr.length;i++)
+                        $(".shoupai.shangjia").children(".fulou").append(get_peng(arr[i]));
+                }
                 else if (pos == 'gang')
-                    $(".shoupai.shangjia").children(".fulou").append(get_gang(arr));
+                    $(".shoupai.shangjia").children(".fulou").empty();
+                    for (i=0;i<arr.length;i++)
+                        $(".shoupai.shangjia").children(".fulou").append(get_gang(arr[i]));
                 break;     
         }
     }
@@ -377,7 +410,7 @@
             if ("WebSocket" in window)
             {
                // 打开一个 web socket
-               ws = new WebSocket("ws://192.168.10.137:5678");
+               ws = new WebSocket("ws://127.0.0.1:5678");
                
                // 连接建立后的回调函数
                ws.onopen = function()
@@ -392,214 +425,24 @@
                { 
                   var received_msg = evt.data;
                  // alert(received_msg);
+                 console.log(received_msg);
                     json_obj = JSON.parse(received_msg);
-
-                switch (json_obj.type)
-                {
-                    case 'start':
-                        main_shou = json_obj["1"];
-                        xiajia_shou = json_obj["2"];
-                        duimian_shou = json_obj["3"];
-                        shangjia_shou = json_obj["4"];
-                        shou_sort_all();
-                        show_pai(main_shou, 1, "shou");           
-                        show_pai(xiajia_shou, 2, "shou");          
-                        show_pai(duimian_shou, 3, "shou");
-                        show_pai(shangjia_shou, 4, "shou");
-                        break;
-                    case 'over':
-                        $(".shoupai.xiajia").children(".bingpai").empty()
-                        $(".shoupai.xiajia").children(".fulou").empty()
-                        $(".shoupai.main").children(".bingpai").empty()
-                        $(".shoupai.main").children(".fulou").empty()
-                        $(".shoupai.duimian").children(".bingpai").empty()
-                        $(".shoupai.duimian").children(".fulou").empty()
-                        $(".shoupai.shangjia").children(".bingpai").empty()
-                        $(".shoupai.shangjia").children(".fulou").empty()
-                        $(".he.xiajia").children(".dapai").empty()
-                        $(".he.duimian").children(".dapai").empty()
-                        $(".he.main").children(".dapai").empty()
-                        $(".he.shangjia").children(".dapai").empty()
-                        $(".defen").children(".duimian").empty()
-                        $(".defen").children(".main").empty()
-                        $(".defen").children(".xiajia").empty()
-                        $(".defen").children(".shangjia").empty()
-                        
-                        break;
-                    case 'mo':
-                        
-                        $(".paishu").html(""+json_obj['tuple'])
-                        if (json_obj['player']=='p1'){
-                            show_pai(json_obj['pai'], 1, 'mo');
-                            main_shou.push(json_obj['pai']);
-                        }
-                        else if (json_obj['player']=='p2'){
-                            show_pai(json_obj['pai'], 2, 'mo');
-                            xiajia_shou.push(json_obj['pai']);
-                        }
-                        else if (json_obj['player']=='p3'){
-                             show_pai(json_obj['pai'], 3, 'mo');
-                            duimian_shou.push(json_obj['pai']);
-                        }
-                        else if (json_obj['player']=='p4'){
-                             show_pai(json_obj['pai'], 4, 'mo');
-                            shangjia_shou.push(json_obj['pai']);
-                        }
-                        shou_sort_all();
-                        break;
-                    case 'da':
-                        if (json_obj['player']=='p1') {
-                            main_he.push(json_obj['pai']);
-                            main_shou.remove(json_obj['pai']);
-                            show_pai(json_obj['pai'],1,"da");
-                            show_pai(main_shou,1,"shou");
-                        }
-                        else if (json_obj['player']=='p2'){
-                            xiajia_he.push(json_obj['pai']);
-                            xiajia_shou.remove(json_obj['pai']);
-                            show_pai(json_obj['pai'],2,"da");
-                            show_pai(xiajia_shou,2,"shou");
-                        }
-                        else if (json_obj['player']=='p3') {
-                            duimian_he.push(json_obj['pai']);
-                            duimian_shou.remove(json_obj['pai']);
-                            show_pai(json_obj['pai'],3,"da");
-                            show_pai(duimian_shou,3,"shou");
-                        }
-                        else if (json_obj['player']=='p4') {
-                            shangjia_he.push(json_obj['pai']);
-                            shangjia_shou.remove(json_obj['pai']);
-                            show_pai(json_obj['pai'],4,"da");
-                            show_pai(shangjia_shou,4,"shou");
-                        }
-                        break;
-                    case 'peng':
-                        he_remove(json_obj['last_player'])
-                        if (json_obj['player']=='p1'){
-                            show_pai(json_obj['pai'],1,"peng");
-                            main_shou.remove(json_obj['pai']);
-                            main_shou.remove(json_obj['pai']);
-                            
-                            show_pai(main_shou,1,"shou");
-                        }
-                        else if (json_obj['player']=='p2'){
-                            show_pai(json_obj['pai'],2,"peng");
-                            xiajia_shou.remove(json_obj['pai']);
-                            xiajia_shou.remove(json_obj['pai']);
-                            show_pai(xiajia_shou,2,"shou");
-                        }
-                        else if (json_obj['player']=='p3'){
-                            show_pai(json_obj['pai'],3,"peng");
-                            duimian_shou.remove(json_obj['pai']);
-                            duimian_shou.remove(json_obj['pai']);
-                            show_pai(duimian_shou,3,"shou");
-                        }
-                        else if (json_obj['player']=='p4'){
-                            show_pai(json_obj['pai'],4,"peng");
-                            shangjia_shou.remove(json_obj['pai']);
-                            shangjia_shou.remove(json_obj['pai']);
-                            show_pai(shangjia_shou,4,"shou");
-                        }
-                        break;
-                    case 'dianpao':
-                        if (json_obj['player']=='p1'){
-                            $(".defen").children(".main").append("HU LE");
-                        }
-                        else if (json_obj['player']=='p2'){
-                            $(".defen").children(".xiajia").append("HU LE");
-                        }
-                        else if (json_obj['player']=='p3'){
-                            $(".defen").children(".duimian").append("HU LE");
-                        }
-                        else if (json_obj['player']=='p4'){
-                            $(".defen").children(".shangjia").append("HU LE");
-                        }
-                        break;
-                    case 'zimo':
-                        $(".paishu").html(""+json_obj['tuple'])
-                        if (json_obj['player']=='p1'){
-                            show_pai(json_obj['pai'], 1, 'mo');
-                            $(".defen").children(".main").append("HU LE");
-                        }
-                        else if (json_obj['player']=='p2'){
-                            show_pai(json_obj['pai'], 2, 'mo');
-                            $(".defen").children(".xiajia").append("HU LE");
-                        }
-                        else if (json_obj['player']=='p3'){
-                            show_pai(json_obj['pai'], 3, 'mo');
-                            $(".defen").children(".duimian").append("HU LE");
-                        }
-                        else if (json_obj['player']=='p4'){
-                            show_pai(json_obj['pai'], 4, 'mo');
-                            $(".defen").children(".shangjia").append("HU LE");
-                        }
-                        break;
-                    case 'gang':
-                        he_remove(json_obj['last_player'])
-                        if (json_obj['player']=='p1'){
-                            show_pai(json_obj['pai'],1,"gang");
-                            main_shou.remove(json_obj['pai']);
-                            main_shou.remove(json_obj['pai']);
-                            main_shou.remove(json_obj['pai']);
-                            show_pai(main_shou,1,"shou");
-                        }
-                        else if (json_obj['player']=='p2'){
-                            show_pai(json_obj['pai'],2,"gang");
-                            xiajia_shou.remove(json_obj['pai']);
-                            xiajia_shou.remove(json_obj['pai']);
-                            xiajia_shou.remove(json_obj['pai']);
-                            show_pai(xiajia_shou,2,"shou");
-                        }
-                        else if (json_obj['player']=='p3'){
-                            show_pai(json_obj['pai'],3,"gang");
-                            duimian_shou.remove(json_obj['pai']);
-                            duimian_shou.remove(json_obj['pai']);
-                            duimian_shou.remove(json_obj['pai']);
-                            show_pai(duimian_shou,3,"shou");
-                        }
-                        else if (json_obj['player']=='p4'){
-                            show_pai(json_obj['pai'],4,"gang");
-                            shangjia_shou.remove(json_obj['pai']);
-                            shangjia_shou.remove(json_obj['pai']);
-                            shangjia_shou.remove(json_obj['pai']);
-                            show_pai(shangjia_shou,4,"shou");
-                        }
-                        break;
-                    case 'zi_gang':
-                        if (json_obj['player']=='p1'){
-                            show_pai(json_obj['pai'],1,"gang");
-                            main_shou.remove(json_obj['pai']);
-                            main_shou.remove(json_obj['pai']);
-                            main_shou.remove(json_obj['pai']);
-                            main_shou.remove(json_obj['pai']);
-                            show_pai(main_shou,1,"shou");
-                        }
-                        else if (json_obj['player']=='p2'){
-                            show_pai(json_obj['pai'],2,"gang");
-                            xiajia_shou.remove(json_obj['pai']);
-                            xiajia_shou.remove(json_obj['pai']);
-                            xiajia_shou.remove(json_obj['pai']);
-                            xiajia_shou.remove(json_obj['pai']);
-                            show_pai(xiajia_shou,2,"shou");
-                        }
-                        else if (json_obj['player']=='p3'){
-                            show_pai(json_obj['pai'],3,"gang");
-                            duimian_shou.remove(json_obj['pai']);
-                            duimian_shou.remove(json_obj['pai']);
-                            duimian_shou.remove(json_obj['pai']);
-                            duimian_shou.remove(json_obj['pai']);
-                            show_pai(duimian_shou,3,"shou");
-                        }
-                        else if (json_obj['player']=='p4'){
-                            show_pai(json_obj['pai'],4,"gang");
-                            shangjia_shou.remove(json_obj['pai']);
-                            shangjia_shou.remove(json_obj['pai']);
-                            shangjia_shou.remove(json_obj['pai']);
-                            shangjia_shou.remove(json_obj['pai']);
-                            show_pai(shangjia_shou,4,"shou");
-                        }
-                        break;
-                }
+                    show_pai(json_obj["1"]["shou"], 1, 'shou');
+                    show_pai(json_obj["2"]["shou"], 2, 'shou');
+                    show_pai(json_obj["3"]["shou"], 3, 'shou');
+                    show_pai(json_obj["4"]["shou"], 4, 'shou');
+                    show_pai(json_obj["1"]["river"], 1, 'da');
+                    show_pai(json_obj["2"]["river"], 2, 'da');
+                    show_pai(json_obj["3"]["river"], 3, 'da');
+                    show_pai(json_obj["4"]["river"], 4, 'da');
+                    show_pai(json_obj["1"]["peng"], 1, 'peng');
+                    show_pai(json_obj["2"]["peng"], 2, 'peng');
+                    show_pai(json_obj["3"]["peng"], 3, 'peng');
+                    show_pai(json_obj["4"]["peng"], 4, 'peng');
+                    show_pai(json_obj["1"]["gang"], 1, 'gang');
+                    show_pai(json_obj["2"]["gang"], 2, 'gang');
+                    show_pai(json_obj["3"]["gang"], 3, 'gang');
+                    show_pai(json_obj["4"]["gang"], 4, 'gang');
                   
                };
                
@@ -622,7 +465,9 @@
          }
         
     WebSocketTest();
-
+    function go_next() {
+        ws.send('go');
+    }
 
     </script>
     
