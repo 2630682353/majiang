@@ -16,7 +16,17 @@ class desk:
 	def __init__(self):
 		self.list_tuple = []; self.list_river = []
 		self.list_ding = []; self.list_player = []
-
+	def send_desk_info(self,conn, send_data):
+		for i in range(0,4):
+			send_data[i+1].clear()
+			send_data[i+1].extend(self.list_player[i].list_t)
+			for j in range(len(self.list_player[i].list_w)):
+				send_data[i+1].append(self.list_player[i].list_w[j]+10)
+			for j in range(len(self.list_player[i].list_b)):
+				send_data[i+1].append(self.list_player[i].list_b[j]+20)
+		send_data[5].clear()
+		send_data[5].extend(self.list_river)
+		socket_test.send_msg(conn, bytes(json.dumps(send_data), encoding="utf-8"))
 
 class player:
 	list_t = [];list_w = [];list_b= []; list_hope_pai = [];
@@ -311,24 +321,34 @@ class player:
 
 	def caculate_score(self):
 		score = 0;
+		total_dui_num = 0;
 		if self.ding == 't':
 			nodui_score = self.group_shunzi(self.list_w)*3 + self.group_shunzi(self.list_b)*3+ len(self.have_peng)*3
+			total_dui_num = cal_dui(self.list_w,self.list_b)
 			num_nen_peng = self.find_nen_peng()
-			if num_nen_peng > 0:
+			if (total_dui_num == 1)
+				score = nodui_score + 2
+			else if num_nen_peng > 0:
 				score = nodui_score + num_nen_peng + 1   #计算分数
 			else:
 				score = nodui_score
 		if self.ding == 'w':
 			nodui_score = self.group_shunzi(self.list_t)*3 + self.group_shunzi(self.list_b)*3+ len(self.have_peng)*3
+			total_dui_num = cal_dui(self.list_t,self.list_b)
 			num_nen_peng = self.find_nen_peng()
-			if num_nen_peng > 0:
+			if (total_dui_num == 1)
+				score = nodui_score + 2
+			else if num_nen_peng > 0:
 				score = nodui_score + num_nen_peng + 1   #计算分数
 			else:
 				score = nodui_score
 		if self.ding == 'b':
 			nodui_score = self.group_shunzi(self.list_t)*3 + self.group_shunzi(self.list_w)*3+ len(self.have_peng)*3
+			total_dui_num = cal_dui(self.list_t,self.list_w)
 			num_nen_peng = self.find_nen_peng()
-			if num_nen_peng > 0:
+			if (total_dui_num == 1)
+				score = nodui_score + 2
+			else if num_nen_peng > 0:
 				score = nodui_score + num_nen_peng + 1   #计算分数
 			else:
 				score = nodui_score
@@ -502,7 +522,7 @@ for x in range(0, 100):
 	print(desk1.list_tuple)
 	print("\n\n")
 
-	send_data = {1:[],2:[],3:[],4:[]}
+	send_data = {1:[],2:[],3:[],4:[],5:[]}
 	for i in range(0,13):
 		for j in range(0,4):
 			list_player[j].mopai(desk1.list_tuple.pop())
@@ -511,21 +531,17 @@ for x in range(0, 100):
 	for i in range(0,4):
 		list_player[i].ding_sure()
 
-	
-	send_data['type'] = "start"
-	
 	recv_data = conn.recv(1024)
 	recv_data = socket_test.get_data(recv_data)
 	print("recv_data:", recv_data)
-	socket_test.send_msg(conn, bytes(json.dumps(send_data), encoding="utf-8"))
-
-	str = input("\n")
 	index = 0
 	count_player = 4
 	while len(desk1.list_tuple)>0 and len(list_player) > 0:
 
 		list_player[index].mopai(desk1.list_tuple.pop())
 		list_player[index].show()
+		desk1.send_desk_info(conn, send_data)
+		recv_data = conn.recv(1024)
 		if list_player[index].score == 14:
 			print(list_player[index].name," hu le ####################################")
 			list_player.pop(index)
@@ -539,6 +555,8 @@ for x in range(0, 100):
 				desk1.list_river.append(pai)
 				list_player[index].show()
 				desk1.show()
+				desk1.send_desk_info(conn, send_data)
+				recv_data = conn.recv(1024)
 				if len(list_player) > 1:
 					for i in range(0,count_player):
 						if index == i:

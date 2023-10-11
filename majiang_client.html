@@ -3,6 +3,17 @@
 <head>
     <meta charset="utf-8">
 </head>
+<script type="text/javascript" src="jquery-3.7.0.min.js"></script>
+<body>
+    <input type='button' onclick="go_next()" value="go"/>
+    <div>
+	<div><input type='text' id='p1'  value='dddd' style="width: 300px;"/></div>
+    <div><input type='text' id='p2'  value='dddd' style="width: 300px;"/></div>
+    <div><input type='text' id='p3'  value='dddd' style="width: 300px;"/></div>
+    <div><input type='text' id='p4'  value='dddd' style="width: 300px;"/></div>
+    <div><input type='text' id='p5'  value='dddd' style="width: 800px;"/></div>
+    </div>
+</body>
 <script type="text/javascript">
 var ws = new WebSocket('ws://127.0.0.1:5678');
 // 获取连接状态
@@ -11,14 +22,27 @@ console.log('ws连接状态：' + ws.readyState);
 ws.onopen = function () {
     console.log('ws连接状态：' + ws.readyState);
     //连接成功则发送一个数据
-    ws.send('test1');
 }
 // 接听服务器发回的信息并处理展示
 ws.onmessage = function (data) {
     console.log('接收到来自服务器的消息：');
     console.log(data);
     //完成通信后关闭WebSocket连接
-    ws.close();
+    //ws.close();
+    handle_msg(data.data);
+}
+function handle_msg(data) {
+    
+    var obj = JSON.parse(data);
+    $('#p1').val(obj["1"].toString());
+    $('#p2').val(obj["2"].toString());
+    $('#p3').val(obj["3"].toString());
+    $('#p4').val(obj["4"].toString());
+    $('#p5').val(obj["5"].toString());
+}
+
+function go_next() {
+    ws.send('go');
 }
 // 监听连接关闭事件
 ws.onclose = function () {
@@ -30,9 +54,4 @@ ws.onerror = function (error) {
     console.log(error);
 }
 </script>
-
-
-<body>
-	
-</body>
 </html>
