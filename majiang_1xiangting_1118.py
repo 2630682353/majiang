@@ -304,6 +304,12 @@ class player:
 						return pai
 					elif self.hu_pai_left_num > hu_pai_left_num + 1.2:
 						return pai
+					else:
+						self.nenpeng.append(pai)
+						self.have_peng.remove(pai)
+						self.mopai(pai)
+						self.mopai(pai)
+						return 0
 				else:
 					self.nenpeng.append(pai)
 					self.have_peng.remove(pai)
@@ -324,6 +330,11 @@ class player:
 						return pai
 					elif self.hu_pai_left_num > hu_pai_left_num + 1.2:
 						return pai
+					else:
+						self.have_peng.remove(pai)
+						self.mopai(pai)
+						self.mopai(pai)
+						return 0
 				else:
 					self.have_peng.remove(pai)
 					self.mopai(pai)
