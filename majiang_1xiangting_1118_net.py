@@ -10,6 +10,7 @@ class desk:
 	list_tuple = []; list_river = []
 	list_ding = []; list_player = []
 	phase = 1;list_total_player = []
+	hu_one_state = [];
 	def show(self):
 		return
 		print("river: ",self.list_river)
@@ -19,8 +20,9 @@ class desk:
 		self.list_tuple = []; self.list_river = []
 		self.list_ding = []; self.list_player = []
 		self.phase = 1;self.list_total_player = []
+		self.hu_one_state = [];
 
-	def send_desk_info(self,conn, send_data):
+	def send_desk_info(self,conn, send_data, operation):
 		for i in range(0,4):
 			send_data[i+1]['shou'].clear()
 			send_data[i+1]['shou'].extend(self.list_player[i].list_t)
@@ -34,6 +36,9 @@ class desk:
 			send_data[i+1]['peng'].extend(self.list_player[i].have_peng)
 			send_data[i+1]['gang'].clear()
 			send_data[i+1]['gang'].extend(self.list_player[i].have_gang)
+		send_data[5]['left_num'] = len(self.list_tuple)
+		send_data[5]['hu'].clear()
+		send_data[5]['hu'].extend(self.hu_one_state);
 		socket_test.send_msg(conn, bytes(json.dumps(send_data), encoding="utf-8"))
 
 class player:
@@ -1569,11 +1574,12 @@ for x in range(0, 5):
 	index = 0
 	count_player = 4
 	hu_one_state.clear()
-
-	send_data = {1:{'shou':[],'river':[],'peng':[],'gang':[]},
-	2:{'shou':[],'river':[],'peng':[],'gang':[]},
-	3:{'shou':[],'river':[],'peng':[],'gang':[]},
-	4:{'shou':[],'river':[],'peng':[],'gang':[]}}
+	desk1.hu_one_state = hu_one_state
+	send_data = {1:{'shou':[],'river':[],'peng':[],'gang':[], 'mo':0},
+	2:{'shou':[],'river':[],'peng':[],'gang':[], 'mo':0},
+	3:{'shou':[],'river':[],'peng':[],'gang':[], 'mo':0},
+	4:{'shou':[],'river':[],'peng':[],'gang':[], 'mo':0},
+	5:{'hu':[], 'left_num':0}}
 	recv_data = conn.recv(1024)
 	recv_data = socket_test.get_data(recv_data)
 	print("recv_data:", recv_data)
