@@ -1656,6 +1656,7 @@ for x in range(0, 100):
 	elif len(list_player) == 4:
 		no_user_hu = no_user_hu + 1
 
+	print("no_user_hu:",no_user_hu,"hu_user1:",hu_user1,"hu_user2:",hu_user2,"hu_user3:",hu_user3,"hu_user4:",hu_user4)
 	hu_state.append(hu_one_state)
 
 ticks2 = time.time()
