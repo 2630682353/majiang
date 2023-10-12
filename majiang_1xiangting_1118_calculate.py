@@ -19,15 +19,15 @@ class desk:
 
 
 class player:
-	list_t = [];list_w = [];list_b= []; list_hope_pai = [];
+	list_t = [];list_w = [];list_b= []; list_hope_pai = []; secend_list_hope_pai = []; list_river = [];
 	yipeng = 0; yipeng_score = 0; nenpeng = [];left_pai_peng = []; hope_score = 0; have_peng = []
 	one_xiang_ting = [];xia_jiao = 0; list_ding = []; nengang = []; have_gang = []
 	score = 0; ding = 't'; value = 100; mo = 0; da = 0;user_desk = desk();max_score_pai_num = 0
 	dui = 0; name = "";hu_pai_left_num = 0;list_dui = [];win_score = 100; money = 1000; human = 0;
 	def __init__(self):
-		self.list_t=[];self.list_w=[];self.list_b=[];self.list_hope_pai=[];self.nenpeng=[]
+		self.list_t=[];self.list_w=[];self.list_b=[];self.list_hope_pai=[];self.secend_list_hope_pai = []; self.nenpeng=[]
 		self.have_peng=[];self.one_xiang_ting = [];self.list_ding= [];self.nengang = []; self.have_gang = []
-		self.list_dui = [];self.left_pai_peng = [];
+		self.list_dui = [];self.left_pai_peng = []; self.list_river = [];
 	def sort_pai(self):
 		self.list_t.sort(); self.list_w.sort(); self.list_b.sort()
 	def show(self):
@@ -256,7 +256,7 @@ class player:
 			gupai = self.guzhang()
 			if gupai > 0:
 				self.da = self.dapai_spec(gupai)
-			elif self.score >= 8 and self.score < 11 and len(self.nenpeng) < 4 or self.xia_jiao == 0 and self.score >= 11:
+			elif self.score >= 6 and self.score < 11 and len(self.nenpeng) < 4 or self.xia_jiao == 0 and self.score >= 11:
 				best_pai,max_score,max_score_pai_num = self.think(2)
 				if best_pai == 0:
 #					gupai = self.guzhang2()
@@ -265,6 +265,7 @@ class player:
 #					else:
 					best_pai,max_score,max_score_pai_num = self.think(1)
 				self.da = self.dapai_spec(best_pai)
+				self.xia_jiao = self.check_xiajiao()
 			else:
 				best_pai,max_score,max_score_pai_num = self.think(1)
 				if max_score >=14:
@@ -378,11 +379,45 @@ class player:
 		else:
 			return 0
 
+	def check_xiajiao(self):
+		tmp_player = copy.deepcopy(self)
+		max_score = 0
+		if tmp_player.ding == 't':
+			for j in range(11, 30):
+				if j == 20:
+					continue
+				tmp_player.mopai(j)
+				if tmp_player.score > max_score:
+					max_score = tmp_player.score;
+				tmp_player.dapai_spec(j)
+		elif tmp_player.ding == 'w':
+			for j in range(1, 30):
+				if j > 9 and j < 21:
+					continue
+				tmp_player.mopai(j)
+				if tmp_player.score > max_score:
+					max_score = tmp_player.score;
+				tmp_player.dapai_spec(j)
+		elif tmp_player.ding == 'b':
+			for j in range(1, 20):
+				if j == 10:
+					continue
+				tmp_player.mopai(j)
+				if tmp_player.score > max_score:
+					max_score = tmp_player.score;
+				tmp_player.dapai_spec(j)
+		del tmp_player
+		if max_score >= 14:
+			return 1
+		else:
+			return 0
+
 	def think(self,level):
-		max_score_pai = 0;max_score_pai_num = 0; tmp_pai = 0;max_score = 0; tmp_score = 0;
+		max_score_pai = 0;max_score_pai_num = 0; tmp_pai = 0;max_score = 0; tmp_score = 0; tmp_max_score = 0;
 		the_best_pai = 0; tmp_player = None; tmp_best_pai = 0; tmp_max_score = 0; one_xiang_ting = []
 		one_xiang_best_pai =0; one_xiang_max_num = 0; last_think_pai = 100; last_think_score = 0
-		one_xiang_total_num = 0;one_xiang_max_total_num = 0
+		one_xiang_total_num = 0;one_xiang_max_total_num = 0; secend_max_score_pai_num = 0; tmp_secend_max_score_pai_num = 0;
+		secend_max_score_pai = 0; tmp_secend_max_score_pai = 0; send_max_score = 0; tmp_secend_max_score = 0;
 		self.list_hope_pai.clear()
 		self.hu_pai_left_num = 0
 		if self.ding == 't':
@@ -409,6 +444,7 @@ class player:
 					if level > 1:
 						tmp_player = copy.deepcopy(self)
 						tmp_best_pai,tmp_max_score,max_score_pai_num = tmp_player.think(1)
+						del tmp_player
 						if tmp_max_score >= 14:
 							if self.list_ding.count(self.ding)>=3 and max_score_pai_num > 0.9:
 								one_xiang_ting.append(j)
@@ -417,20 +453,19 @@ class player:
 								one_xiang_ting.append(j)
 								one_xiang_total_num = one_xiang_total_num + max_score_pai_num
 					else:
-						if last_think_score < 8 and tmp_score < 11 and tmp_score > 8:
-							if max_score < 10:
-								self.list_hope_pai.clear()
-								max_score_pai_num = 0
-							self.list_hope_pai.append(j)
-							max_score_pai = tmp_pai
-							max_score = 10
 
-						elif tmp_score > max_score:
+						if tmp_score > max_score:
+							secend_max_score = max_score;
+							self.secend_list_hope_pai.clear()
+							self.secend_list_hope_pai.extend(self.list_hope_pai.append(j))
 							max_score = tmp_score; max_score_pai = tmp_pai;max_score_pai_num = 0
 							self.list_hope_pai.clear()
 							self.list_hope_pai.append(j)
 						elif tmp_score == max_score:
 							self.list_hope_pai.append(j);max_score_pai = tmp_pai
+						elif tmp_score == secend_max_score:
+							self.secend_list_hope_pai.
+
 					self.dapai_spec(j)
 				self.mopai(tmp_pai)
 #				if len(self.list_hope_pai) == 0:
@@ -458,12 +493,13 @@ class player:
 					if len(self.list_hope_pai) > 0:
 						tmp_max_score_pai_num = self.list_cant_see_left(self.list_hope_pai)
 
-						if tmp_max_score_pai_num > max_score_pai_num + 0.1:
+						if tmp_max_score_pai_num > max_score_pai_num + 0.1 and max_score >= tmp_max_score:
+							tmp_max_score = max_score
 							max_score_pai_num = tmp_max_score_pai_num
 							the_best_pai = tmp_pai
 							if max_score >= 14:
 								self.hu_pai_left_num = max_score_pai_num
-						elif tmp_max_score_pai_num >= max_score_pai_num - 0.1 and tmp_max_score_pai_num <= max_score_pai_num + 0.1 and max_score_pai_num !=0:
+						elif tmp_max_score_pai_num >= max_score_pai_num - 0.1 and tmp_max_score_pai_num <= max_score_pai_num + 0.1 and max_score_pai_num !=0 and max_score >= tmp_max_score:
 							if self.pai_value(tmp_pai) < self.pai_value(the_best_pai):
 								the_best_pai = tmp_pai
 					if the_best_pai == 0:
@@ -494,6 +530,7 @@ class player:
 					if level > 1:
 						tmp_player = copy.deepcopy(self)
 						tmp_best_pai,tmp_max_score,max_score_pai_num = tmp_player.think(1)
+						del tmp_player
 						if tmp_max_score >= 14:
 							if self.list_ding.count(self.ding)>=3 and max_score_pai_num > 0.9:
 								one_xiang_ting.append(j)
@@ -582,6 +619,7 @@ class player:
 					if level > 1:
 						tmp_player = copy.deepcopy(self)
 						tmp_best_pai,tmp_max_score,max_score_pai_num = tmp_player.think(1)
+						del tmp_player
 						if tmp_max_score >= 14:
 							if self.list_ding.count(self.ding)>=3 and max_score_pai_num > 0.9:
 								one_xiang_ting.append(j)
@@ -590,7 +628,7 @@ class player:
 								one_xiang_ting.append(j)
 								one_xiang_total_num = one_xiang_total_num + max_score_pai_num
 					else:
-						if last_think_score < 8 and tmp_score < 11 and tmp_score > 8:
+						if last_think_score <= 8 and tmp_score < 11 and tmp_score > 8:
 							if max_score < 10:
 								self.list_hope_pai.clear()
 								max_score_pai_num = 0
@@ -668,6 +706,7 @@ class player:
 					if level > 1:
 						tmp_player = copy.deepcopy(self)
 						tmp_best_pai,tmp_max_score,max_score_pai_num = tmp_player.think(1)
+						del tmp_player
 						if tmp_max_score >= 14:
 							if self.list_ding.count(self.ding)>=3 and max_score_pai_num > 0.9:
 								one_xiang_ting.append(j)
@@ -754,6 +793,7 @@ class player:
 					if level > 1:
 						tmp_player = copy.deepcopy(self)
 						tmp_best_pai,tmp_max_score,max_score_pai_num = tmp_player.think(1)
+						del tmp_player
 						if tmp_max_score >= 14:
 							if self.list_ding.count(self.ding)>=3 and max_score_pai_num > 0.9:
 								one_xiang_ting.append(j)
@@ -839,6 +879,7 @@ class player:
 					if level > 1:
 						tmp_player = copy.deepcopy(self)
 						tmp_best_pai,tmp_max_score,max_score_pai_num = tmp_player.think(1)
+						del tmp_player
 						if tmp_max_score >= 14:
 							if self.list_ding.count(self.ding)>=3 and max_score_pai_num > 0.9:
 								one_xiang_ting.append(j)
@@ -942,6 +983,7 @@ class player:
 				list_x.pop(index2);list_x.pop(index);list_x.pop(0)
 				total = total +1
 		total1 = self.group_shunzi_deep(copy.copy(list_y))
+		del list_x
 		if total1 > total:
 			return total1
 		else:
@@ -1160,6 +1202,7 @@ class player:
 					i = i + 4
 				else:
 					i = i + 1
+		del tmp_player
 		return gang_pai
 
 
@@ -1522,6 +1565,7 @@ for x in range(0, 100):
 	p4.name = "p4"
 	list_player = [p1,p2,p3,p4]
 	desk1.list_total_player = [p1,p2,p3,p4]
+	desk1.list_player = [p1,p2,p3,p4]
 
 	list_tmp_tuple.clear()
 	desk1.list_tuple.clear()
