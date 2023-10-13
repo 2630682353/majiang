@@ -42,13 +42,13 @@ class desk:
 		socket_test.send_msg(conn, bytes(json.dumps(send_data), encoding="utf-8"))
 
 class player:
-	list_t = [];list_w = [];list_b= []; list_hope_pai = []; list_river = [];
+	list_t = [];list_w = [];list_b= []; list_hope_pai = []; secend_list_hope_pai = []; list_river = [];
 	yipeng = 0; yipeng_score = 0; nenpeng = [];left_pai_peng = []; hope_score = 0; have_peng = []
 	one_xiang_ting = [];xia_jiao = 0; list_ding = []; nengang = []; have_gang = []
 	score = 0; ding = 't'; value = 100; mo = 0; da = 0;user_desk = desk();max_score_pai_num = 0
 	dui = 0; name = "";hu_pai_left_num = 0;list_dui = [];win_score = 100; money = 1000; human = 0;
 	def __init__(self):
-		self.list_t=[];self.list_w=[];self.list_b=[];self.list_hope_pai=[];self.nenpeng=[]
+		self.list_t=[];self.list_w=[];self.list_b=[];self.list_hope_pai=[];self.secend_list_hope_pai = []; self.nenpeng=[]
 		self.have_peng=[];self.one_xiang_ting = [];self.list_ding= [];self.nengang = []; self.have_gang = []
 		self.list_dui = [];self.left_pai_peng = []; self.list_river = [];
 	def sort_pai(self):
@@ -100,162 +100,62 @@ class player:
 			self.list_b.remove(pai-20)
 		return pai
 
-	def guzhang2(self):
-		if self.ding == 't':
+	def guzhang_smart(self):
+		list_guzhang = []
+		for pai in self.list_t:
+			if pai>=3 and pai<=7 or self.list_ding.count('t') > 1:
+				continue
+			if self.list_t.count(pai) == 1 and self.list_t.count(pai-1) == 0 and self.list_t.count(pai-2) == 0 and \
+			self.list_t.count(pai+1) == 0 and self.list_t.count(pai+2) == 0:
+				list_guzhang.append(pai)
 
-			if self.list_w.count(1) == 1 and self.list_w.count(2) == 0 and self.list_w.count(3) == 1 and self.list_w.count(4) != 0:
-				return 11
-			if self.list_w.count(9) == 1 and self.list_w.count(8) == 0 and self.list_w.count(7) == 1 and self.list_w.count(6) != 0:
-				return 19
-			if self.list_b.count(1) == 1 and self.list_b.count(2) == 0 and self.list_b.count(3) == 1 and self.list_b.count(4) != 0:
-				return 21
-			if self.list_b.count(9) == 1 and self.list_b.count(8) == 0 and self.list_b.count(7) == 1 and self.list_b.count(6) != 0:
-				return 29
-		if self.ding == 'w':
-			if self.list_t.count(1) == 1 and self.list_t.count(2) == 0 and self.list_t.count(3) == 1 and self.list_t.count(4) != 0:
+		for pai in self.list_w:
+			if pai>=3 and pai<=7 or self.list_ding.count('w') > 1:
+				continue
+			if self.list_w.count(pai) == 1 and self.list_w.count(pai-1) == 0 and self.list_w.count(pai-2) == 0 and \
+			self.list_w.count(pai+1) == 0 and self.list_w.count(pai+2) == 0:
+				list_guzhang.append(pai+10)
+		
+		for pai in self.list_b:
+			if pai>=3 and pai<=7 or self.list_ding.count('b') > 1:
+				continue
+			if self.list_b.count(pai) == 1 and self.list_b.count(pai-1) == 0 and self.list_b.count(pai-2) == 0 and \
+			self.list_b.count(pai+1) == 0 and self.list_b.count(pai+2) == 0:
+				list_guzhang.append(pai+20)
+		return list_guzhang
+	
+	def check_special_model(self):
+		if self.list_t.count(1) == 1 and self.list_t.count(2) == 1 and self.list_t.count(3) == 0 and self.cant_see_left(3) == 0:
+			if self.cant_see_left(2) <= 1:
+				return 2
+			else:
 				return 1
-			if self.list_t.count(9) == 1 and self.list_t.count(8) == 0 and self.list_t.count(7) == 1 and self.list_t.count(6) != 0:
-				return 9
-			if self.list_b.count(1) == 1 and self.list_b.count(2) == 0 and self.list_b.count(3) == 1 and self.list_b.count(4) != 0:
-				return 21
-			if self.list_b.count(9) == 1 and self.list_b.count(8) == 0 and self.list_b.count(7) == 1 and self.list_b.count(6) != 0:
-				return 29
-		if self.ding == 'b':
-			if self.list_w.count(1) == 1 and self.list_w.count(2) == 0 and self.list_w.count(3) == 1 and self.list_w.count(4) != 0:
+		if self.list_w.count(1) == 1 and self.list_w.count(2) == 1 and self.list_w.count(3) == 0 and self.cant_see_left(13) == 0:
+			if self.cant_see_left(12) <= 1:
+				return 12
+			else:
 				return 11
-			if self.list_w.count(9) == 1 and self.list_w.count(8) == 0 and self.list_w.count(7) == 1 and self.list_w.count(6) != 0:
-				return 19
-			if self.list_t.count(1) == 1 and self.list_t.count(2) == 0 and self.list_t.count(3) == 1 and self.list_t.count(4) != 0:
-				return 1
-			if self.list_t.count(9) == 1 and self.list_t.count(8) == 0 and self.list_t.count(7) == 1 and self.list_t.count(6) != 0:
+		if self.list_b.count(1) == 1 and self.list_b.count(2) == 1 and self.list_b.count(3) == 0 and self.cant_see_left(23) == 0:
+			if self.cant_see_left(22) <= 1:
+				return 22
+			else:
+				return 21
+		if self.list_t.count(9) == 1 and self.list_t.count(8) == 1 and self.list_t.count(7) == 0 and self.cant_see_left(7) == 0:
+			if self.cant_see_left(8) <= 1:
+				return 8
+			else:
 				return 9
+		if self.list_w.count(9) == 1 and self.list_w.count(8) == 1 and self.list_w.count(7) == 0 and self.cant_see_left(17) == 0:
+			if self.cant_see_left(18) <= 1:
+				return 18
+			else:
+				return 19
+		if self.list_b.count(9) == 1 and self.list_b.count(8) == 1 and self.list_b.count(7) == 0 and self.cant_see_left(27) == 0:
+			if self.cant_see_left(28) <= 1:
+				return 28
+			else:
+				return 29
 		return 0
-
-	def t_duoque_b_guzhang(self):
-		if self.list_w.count(1) == 1 and self.list_w.count(2) == 0 and self.list_w.count(3) == 0:
-			return 11
-		if self.list_w.count(9) == 1 and self.list_w.count(8) == 0 and self.list_w.count(7) == 0:
-			return 19
-		if self.list_w.count(1) == 0 and self.list_w.count(2) == 1 and self.list_w.count(3) == 0 and self.list_w.count(4) == 0:
-			return 12
-		if self.list_w.count(9) == 0 and self.list_w.count(8) == 1 and self.list_w.count(7) == 0 and self.list_w.count(6) == 0:
-			return 18
-		if self.list_b.count(1) == 1 and self.list_b.count(2) == 0 and self.list_b.count(3) == 0:
-			return 21
-		if self.list_b.count(9) == 1 and self.list_b.count(8) == 0 and self.list_b.count(7) == 0:
-			return 29
-		return 0
-	def t_duoque_w_guzhang(self):
-		if self.list_b.count(1) == 1 and self.list_b.count(2) == 0 and self.list_b.count(3) == 0:
-			return 21
-		if self.list_b.count(9) == 1 and self.list_b.count(8) == 0 and self.list_b.count(7) == 0:
-			return 29
-		if self.list_b.count(1) == 0 and self.list_b.count(2) == 1 and self.list_b.count(3) == 0 and self.list_b.count(4) == 0:
-			return 22
-		if self.list_b.count(9) == 0 and self.list_b.count(8) == 1 and self.list_b.count(7) == 0 and self.list_b.count(6) == 0:
-			return 28
-		if self.list_w.count(1) == 1 and self.list_w.count(2) == 0 and self.list_w.count(3) == 0:
-			return 11
-		if self.list_w.count(9) == 1 and self.list_w.count(8) == 0 and self.list_w.count(7) == 0:
-			return 19
-		return 0
-
-	def w_duoque_t_guzhang(self):
-		if self.list_b.count(1) == 1 and self.list_b.count(2) == 0 and self.list_b.count(3) == 0:
-			return 21
-		if self.list_b.count(9) == 1 and self.list_b.count(8) == 0 and self.list_b.count(7) == 0:
-			return 29
-		if self.list_b.count(1) == 0 and self.list_b.count(2) == 1 and self.list_b.count(3) == 0 and self.list_b.count(4) == 0:
-			return 22
-		if self.list_b.count(9) == 0 and self.list_b.count(8) == 1 and self.list_b.count(7) == 0 and self.list_b.count(6) == 0:
-			return 28
-		if self.list_t.count(1) == 1 and self.list_t.count(2) == 0 and self.list_t.count(3) == 0:
-			return 1
-		if self.list_t.count(9) == 1 and self.list_t.count(8) == 0 and self.list_t.count(7) == 0:
-			return 9
-		return 0
-	def w_duoque_b_guzhang(self):
-		if self.list_t.count(1) == 1 and self.list_t.count(2) == 0 and self.list_t.count(3) == 0:
-			return 1
-		if self.list_t.count(9) == 1 and self.list_t.count(8) == 0 and self.list_t.count(7) == 0:
-			return 9
-		if self.list_t.count(1) == 0 and self.list_t.count(2) == 1 and self.list_t.count(3) == 0 and self.list_t.count(4) == 0:
-			return 2
-		if self.list_t.count(9) == 0 and self.list_t.count(8) == 1 and self.list_t.count(7) == 0 and self.list_t.count(6) == 0:
-			return 8
-		if self.list_b.count(1) == 1 and self.list_b.count(2) == 0 and self.list_b.count(3) == 0:
-			return 21
-		if self.list_b.count(9) == 1 and self.list_b.count(8) == 0 and self.list_b.count(7) == 0:
-			return 29
-		return 0
-
-	def b_duoque_t_guzhang(self):
-		if self.list_w.count(1) == 1 and self.list_w.count(2) == 0 and self.list_w.count(3) == 0:
-			return 11
-		if self.list_w.count(9) == 1 and self.list_w.count(8) == 0 and self.list_w.count(7) == 0:
-			return 19
-		if self.list_w.count(1) == 0 and self.list_w.count(2) == 1 and self.list_w.count(3) == 0 and self.list_w.count(4) == 0:
-			return 12
-		if self.list_w.count(9) == 0 and self.list_w.count(8) == 1 and self.list_w.count(7) == 0 and self.list_w.count(6) == 0:
-			return 18
-		if self.list_t.count(1) == 1 and self.list_t.count(2) == 0 and self.list_t.count(3) == 0:
-			return 1
-		if self.list_t.count(9) == 1 and self.list_t.count(8) == 0 and self.list_t.count(7) == 0:
-			return 9
-		return 0
-
-	def b_duoque_w_guzhang(self):
-		if self.list_t.count(1) == 1 and self.list_t.count(2) == 0 and self.list_t.count(3) == 0:
-			return 1
-		if self.list_t.count(9) == 1 and self.list_t.count(8) == 0 and self.list_t.count(7) == 0:
-			return 9
-		if self.list_t.count(1) == 0 and self.list_t.count(2) == 1 and self.list_t.count(3) == 0 and self.list_t.count(4) == 0:
-			return 2
-		if self.list_t.count(9) == 0 and self.list_t.count(8) == 1 and self.list_t.count(7) == 0 and self.list_t.count(6) == 0:
-			return 8
-		if self.list_w.count(1) == 1 and self.list_w.count(2) == 0 and self.list_w.count(3) == 0:
-			return 11
-		if self.list_w.count(9) == 1 and self.list_w.count(8) == 0 and self.list_w.count(7) == 0:
-			return 19
-		return 0
-
-	def guzhang(self):
-		if len(self.user_desk.list_tuple) >= 15 and self.score < 11:
-			if self.ding == 't':
-				if self.list_ding.count('b') >= 2:
-					return self.t_duoque_b_guzhang()
-			
-				elif self.list_ding.count('w') >= 2:
-					return self.t_duoque_w_guzhang()
-				else:
-					pai = self.t_duoque_w_guzhang()
-					if pai == 0:
-						return self.t_duoque_b_guzhang()
-					return pai
-			if self.ding == 'w':
-				if self.list_ding.count('t') >= 2:
-					return self.w_duoque_t_guzhang()
-				elif self.list_ding.count('b') >= 2:
-					return self.w_duoque_b_guzhang()
-				else:
-					pai = self.w_duoque_b_guzhang()
-					if pai == 0:
-						return self.w_duoque_t_guzhang()
-					return pai
-				
-			if self.ding == 'b':
-				if self.list_ding.count('t') >= 2:
-					return self.b_duoque_t_guzhang()
-				elif self.list_ding.count('w') >= 2:
-					return self.b_duoque_w_guzhang()
-				else:
-					pai = self.b_duoque_w_guzhang()
-					if pai == 0:
-						return self.b_duoque_t_guzhang()
-					return pai
-		else:
-			return 0
-
 	def if_nengmo(self,pai):
 		if pai < 10:
 			if self.cant_see_left(pai):
@@ -276,9 +176,13 @@ class player:
 		elif self.ding == 'b' and len(self.list_b) > 0:
 			self.da = self.list_b.pop()+20
 		else:
-			gupai = self.guzhang()
-			if gupai > 0:
-				self.da = self.dapai_spec(gupai)
+			gupai_list = self.guzhang_smart()
+			da_gupai = 0; gupai_value = 100;
+			if len(gupai_list) > 0:
+				for gupai in gupai_list:
+					self.pai_value(gupai) < gupai_value
+					da_gupai = gupai; gupai_value = self.pai_value(gupai)
+				self.da = self.dapai_spec(da_gupai)
 			elif self.score >= 8 and self.score < 11 and len(self.nenpeng) < 4 or self.xia_jiao == 0 and self.score >= 11:
 				best_pai,max_score,max_score_pai_num = self.think(2)
 				if best_pai == 0:
@@ -288,7 +192,7 @@ class player:
 #					else:
 					best_pai,max_score,max_score_pai_num = self.think(1)
 				self.da = self.dapai_spec(best_pai)
-				
+				self.xia_jiao = self.check_xiajiao()
 			else:
 				best_pai,max_score,max_score_pai_num = self.think(1)
 				if max_score >=14:
@@ -312,7 +216,7 @@ class player:
 				best_pai,max_score,max_score_pai_num = self.think(1)
 				if max_score >= 14:
 					return pai
-				elif self.guzhang() > 0:
+				elif len(self.guzhang_smart()) > 0:
 					return pai
 				else:
 #					self.nenpeng.append(pai)
@@ -403,41 +307,49 @@ class player:
 			return 0
 
 	def check_xiajiao(self):
+		tmp_player = copy.deepcopy(self)
 		max_score = 0
-		if self.ding == 't':
+		if tmp_player.ding == 't':
 			for j in range(11, 30):
 				if j == 20:
 					continue
-				self.mopai(j)
-				if self.score > max_score:
-					max_score = self.score;
-				self.dapai_spec(j)
-		elif self.ding == 'w':
+				if self.cant_see_left(j) > 0:
+					tmp_player.mopai(j)
+					if tmp_player.score > max_score:
+						max_score = tmp_player.score;
+					tmp_player.dapai_spec(j)
+		elif tmp_player.ding == 'w':
 			for j in range(1, 30):
 				if j > 9 and j < 21:
 					continue
-				self.mopai(j)
-				if self.score > max_score:
-					max_score = self.score;
-				self.dapai_spec(j)
-		elif self.ding == 'b':
+				if self.cant_see_left(j) > 0:
+					tmp_player.mopai(j)
+					if tmp_player.score > max_score:
+						max_score = tmp_player.score;
+					tmp_player.dapai_spec(j)
+		elif tmp_player.ding == 'b':
 			for j in range(1, 20):
 				if j == 10:
 					continue
-				self.mopai(j)
-				if self.score > max_score:
-					max_score = self.score;
-				self.dapai_spec(j)
+				if self.cant_see_left(j) > 0:
+					tmp_player.mopai(j)
+					if tmp_player.score > max_score:
+						max_score = tmp_player.score;
+					tmp_player.dapai_spec(j)
+		del tmp_player
 		if max_score >= 14:
 			return 1
 		else:
 			return 0
 
 	def think(self,level):
-		max_score_pai = 0;max_score_pai_num = 0; tmp_pai = 0;max_score = 0; tmp_score = 0;
+		max_score_pai = 0;max_score_pai_num = 0; tmp_pai = 0;max_score = 0; tmp_score = 0; tmp_max_score = 0;
 		the_best_pai = 0; tmp_player = None; tmp_best_pai = 0; tmp_max_score = 0; one_xiang_ting = []
 		one_xiang_best_pai =0; one_xiang_max_num = 0; last_think_pai = 100; last_think_score = 0
-		one_xiang_total_num = 0;one_xiang_max_total_num = 0
+		one_xiang_total_num = 0;one_xiang_max_total_num = 0; secend_max_score_pai_num = 0; tmp_secend_max_score_pai_num = 0;
+		secend_max_score_pai = 0; tmp_secend_max_score_pai = 0; send_max_score = 0; tmp_secend_max_score = 0;
+		think_total_info = {}; tmp_pai_info = \
+		{'max_score':0, 'secend_max_score':0, 'list_max_hope_pai':[], 'list_secend_hope_pai':[], 'max_score_num':0, 'send_score_num':0};
 		self.list_hope_pai.clear()
 		self.hu_pai_left_num = 0
 		if self.ding == 't':
@@ -446,6 +358,8 @@ class player:
 				if last_think_pai == self.list_w[i] + 10:
 					continue
 				tmp_pai = self.dapai_spec(self.list_w[i] + 10)
+				tmp_score = 0; max_score = 0; secend_max_score = 0; 
+
 				last_think_pai = tmp_pai
 				tmp_score = self.caculate_score()
 				if last_think_score > tmp_score + 1 and last_think_score < 13:
@@ -464,6 +378,7 @@ class player:
 					if level > 1:
 						tmp_player = copy.deepcopy(self)
 						tmp_best_pai,tmp_max_score,max_score_pai_num = tmp_player.think(1)
+						del tmp_player
 						if tmp_max_score >= 14:
 							if self.list_ding.count(self.ding)>=3 and max_score_pai_num > 0.9:
 								one_xiang_ting.append(j)
@@ -472,7 +387,26 @@ class player:
 								one_xiang_ting.append(j)
 								one_xiang_total_num = one_xiang_total_num + max_score_pai_num
 					else:
-						if last_think_score < 8 and tmp_score < 11 and tmp_score > 8:
+						
+						if tmp_score > max_score:
+							tmp_pai_info['max_score'] = tmp_score; tmp_pai_info['secend_max_score'] = max_score;
+
+							secend_max_score = max_score;
+							max_score = tmp_score; max_score_pai = tmp_pai;max_score_pai_num = 0
+							tmp_pai_info['list_secend_hope_pai'].clear()
+							tmp_pai_info['list_secend_hope_pai'].extend(tmp_pai_info['list_max_hope_pai'])
+							tmp_pai_info['list_max_hope_pai'].clear()
+							tmp_pai_info['list_max_hope_pai'].append(j);
+							think_total_info[tmp_pai]=copy.deepcopy(tmp_pai_info)
+							
+						elif tmp_score == max_score:
+							#if tmp_pai in think_total_info:
+							think_total_info[tmp_pai]['list_max_hope_pai'].append(j)
+							
+						elif tmp_score == secend_max_score:
+							think_total_info[tmp_pai]['list_secend_hope_pai'].append(j)
+						'''
+						if last_think_score <= 8 and tmp_score < 11 and tmp_score > 8:
 							if max_score < 10:
 								self.list_hope_pai.clear()
 								max_score_pai_num = 0
@@ -486,6 +420,7 @@ class player:
 							self.list_hope_pai.append(j)
 						elif tmp_score == max_score:
 							self.list_hope_pai.append(j);max_score_pai = tmp_pai
+						'''
 					self.dapai_spec(j)
 				self.mopai(tmp_pai)
 #				if len(self.list_hope_pai) == 0:
@@ -509,16 +444,17 @@ class player:
 							if self.pai_value(tmp_pai) < self.pai_value(the_best_pai):
 								the_best_pai = tmp_pai
 				else:
-					
+					'''
 					if len(self.list_hope_pai) > 0:
 						tmp_max_score_pai_num = self.list_cant_see_left(self.list_hope_pai)
 
-						if tmp_max_score_pai_num > max_score_pai_num + 0.1:
+						if tmp_max_score_pai_num > max_score_pai_num + 0.1 and max_score >= tmp_max_score:
+							tmp_max_score = max_score
 							max_score_pai_num = tmp_max_score_pai_num
 							the_best_pai = tmp_pai
 							if max_score >= 14:
 								self.hu_pai_left_num = max_score_pai_num
-						elif tmp_max_score_pai_num >= max_score_pai_num - 0.1 and tmp_max_score_pai_num <= max_score_pai_num + 0.1 and max_score_pai_num !=0:
+						elif tmp_max_score_pai_num >= max_score_pai_num - 0.1 and tmp_max_score_pai_num <= max_score_pai_num + 0.1 and max_score_pai_num !=0 and max_score >= tmp_max_score:
 							if self.pai_value(tmp_pai) < self.pai_value(the_best_pai):
 								the_best_pai = tmp_pai
 					if the_best_pai == 0:
@@ -526,11 +462,14 @@ class player:
 						max_score_pai_num = 0
 					#print("da:",tmp_pai,"max_score:",max_score,"list_hope_pai",self.list_hope_pai)
 					self.list_hope_pai.clear()
+					'''
 			for i in range(0, len(self.list_b)):
 				last_think_score = self.score
 				if last_think_pai == self.list_b[i] + 20:
 					continue
 				tmp_pai = self.dapai_spec(self.list_b[i] + 20)
+				tmp_score = 0; max_score = 0; secend_max_score = 0; 
+
 				last_think_pai = tmp_pai
 				tmp_score = self.caculate_score()
 				if last_think_score > tmp_score + 1 and last_think_score < 13:
@@ -549,6 +488,7 @@ class player:
 					if level > 1:
 						tmp_player = copy.deepcopy(self)
 						tmp_best_pai,tmp_max_score,max_score_pai_num = tmp_player.think(1)
+						del tmp_player
 						if tmp_max_score >= 14:
 							if self.list_ding.count(self.ding)>=3 and max_score_pai_num > 0.9:
 								one_xiang_ting.append(j)
@@ -558,6 +498,26 @@ class player:
 								one_xiang_total_num = one_xiang_total_num + max_score_pai_num
 
 					else:
+
+						if tmp_score > max_score:
+							tmp_pai_info['max_score'] = tmp_score; tmp_pai_info['secend_max_score'] = max_score;
+
+							secend_max_score = max_score;
+							max_score = tmp_score; max_score_pai = tmp_pai;max_score_pai_num = 0
+							tmp_pai_info['list_secend_hope_pai'].clear()
+							tmp_pai_info['list_secend_hope_pai'].extend(tmp_pai_info['list_max_hope_pai'])
+							tmp_pai_info['list_max_hope_pai'].clear()
+							tmp_pai_info['list_max_hope_pai'].append(j);
+							think_total_info[tmp_pai]=copy.deepcopy(tmp_pai_info)
+							
+						elif tmp_score == max_score:
+							#if tmp_pai in think_total_info:
+							think_total_info[tmp_pai]['list_max_hope_pai'].append(j)
+							
+						elif tmp_score == secend_max_score:
+							think_total_info[tmp_pai]['list_secend_hope_pai'].append(j)
+
+						'''
 						if last_think_score < 8 and tmp_score < 11 and tmp_score > 8:
 							if max_score < 10:
 								self.list_hope_pai.clear()
@@ -572,6 +532,7 @@ class player:
 							self.list_hope_pai.append(j)
 						elif tmp_score == max_score:
 							self.list_hope_pai.append(j);max_score_pai = tmp_pai
+						'''
 					self.dapai_spec(j)
 				self.mopai(tmp_pai)
 #				if len(self.list_hope_pai) == 0:
@@ -595,7 +556,7 @@ class player:
 							if self.pai_value(tmp_pai) < self.pai_value(the_best_pai):
 								the_best_pai = tmp_pai
 				else:
-					
+					'''
 					if len(self.list_hope_pai) > 0:
 						tmp_max_score_pai_num = self.list_cant_see_left(self.list_hope_pai)
 
@@ -612,6 +573,7 @@ class player:
 						max_score_pai_num = 0
 					#print("da:",tmp_pai,"max_score:",max_score,"list_hope_pai",self.list_hope_pai)
 					self.list_hope_pai.clear()
+					'''
 
 		if self.ding == 'w':
 			for i in range(0, len(self.list_t)):
@@ -619,6 +581,8 @@ class player:
 				if last_think_pai == self.list_t[i]:
 					continue
 				tmp_pai = self.dapai_spec(self.list_t[i])
+				tmp_score = 0; max_score = 0; secend_max_score = 0; 
+
 				last_think_pai = tmp_pai
 				tmp_score = self.caculate_score()
 				if last_think_score > tmp_score + 1 and last_think_score < 13:
@@ -637,6 +601,7 @@ class player:
 					if level > 1:
 						tmp_player = copy.deepcopy(self)
 						tmp_best_pai,tmp_max_score,max_score_pai_num = tmp_player.think(1)
+						del tmp_player
 						if tmp_max_score >= 14:
 							if self.list_ding.count(self.ding)>=3 and max_score_pai_num > 0.9:
 								one_xiang_ting.append(j)
@@ -645,7 +610,8 @@ class player:
 								one_xiang_ting.append(j)
 								one_xiang_total_num = one_xiang_total_num + max_score_pai_num
 					else:
-						if last_think_score < 8 and tmp_score < 11 and tmp_score > 8:
+						'''
+						if last_think_score <= 8 and tmp_score < 11 and tmp_score > 8:
 							if max_score < 10:
 								self.list_hope_pai.clear()
 								max_score_pai_num = 0
@@ -659,6 +625,24 @@ class player:
 							self.list_hope_pai.append(j)
 						elif tmp_score == max_score:
 							self.list_hope_pai.append(j);max_score_pai = tmp_pai
+						'''
+						if tmp_score > max_score:
+							tmp_pai_info['max_score'] = tmp_score; tmp_pai_info['secend_max_score'] = max_score;
+
+							secend_max_score = max_score;
+							max_score = tmp_score; max_score_pai = tmp_pai;max_score_pai_num = 0
+							tmp_pai_info['list_secend_hope_pai'].clear()
+							tmp_pai_info['list_secend_hope_pai'].extend(tmp_pai_info['list_max_hope_pai'])
+							tmp_pai_info['list_max_hope_pai'].clear()
+							tmp_pai_info['list_max_hope_pai'].append(j);
+							think_total_info[tmp_pai]=copy.deepcopy(tmp_pai_info)
+							
+						elif tmp_score == max_score:
+							#if tmp_pai in think_total_info:
+							think_total_info[tmp_pai]['list_max_hope_pai'].append(j)
+							
+						elif tmp_score == secend_max_score:
+							think_total_info[tmp_pai]['list_secend_hope_pai'].append(j)
 					self.dapai_spec(j)
 				self.mopai(tmp_pai)
 #				if len(self.list_hope_pai) == 0:
@@ -682,7 +666,7 @@ class player:
 							if self.pai_value(tmp_pai) < self.pai_value(the_best_pai):
 								the_best_pai = tmp_pai
 				else:
-					
+					'''
 					if len(self.list_hope_pai) > 0:
 						tmp_max_score_pai_num = self.list_cant_see_left(self.list_hope_pai)
 
@@ -699,11 +683,14 @@ class player:
 						max_score_pai_num = 0
 					#print("da:",tmp_pai,"max_score:",max_score,"list_hope_pai",self.list_hope_pai)
 					self.list_hope_pai.clear()
+					'''
 			for i in range(0, len(self.list_b)):
 				last_think_score = self.score
 				if last_think_pai == self.list_b[i] + 20:
 					continue
 				tmp_pai = self.dapai_spec(self.list_b[i] + 20)
+				tmp_score = 0; max_score = 0; secend_max_score = 0; 
+
 				last_think_pai = tmp_pai
 				tmp_score = self.caculate_score()
 				if last_think_score > tmp_score + 1 and last_think_score < 13:
@@ -723,6 +710,7 @@ class player:
 					if level > 1:
 						tmp_player = copy.deepcopy(self)
 						tmp_best_pai,tmp_max_score,max_score_pai_num = tmp_player.think(1)
+						del tmp_player
 						if tmp_max_score >= 14:
 							if self.list_ding.count(self.ding)>=3 and max_score_pai_num > 0.9:
 								one_xiang_ting.append(j)
@@ -731,6 +719,7 @@ class player:
 								one_xiang_ting.append(j)
 								one_xiang_total_num = one_xiang_total_num + max_score_pai_num
 					else:
+						'''
 						if last_think_score < 8 and tmp_score < 11 and tmp_score > 8:
 							if max_score < 10:
 								self.list_hope_pai.clear()
@@ -745,6 +734,24 @@ class player:
 							self.list_hope_pai.append(j)
 						elif tmp_score == max_score:
 							self.list_hope_pai.append(j);max_score_pai = tmp_pai
+						'''
+						if tmp_score > max_score:
+							tmp_pai_info['max_score'] = tmp_score; tmp_pai_info['secend_max_score'] = max_score;
+
+							secend_max_score = max_score;
+							max_score = tmp_score; max_score_pai = tmp_pai;max_score_pai_num = 0
+							tmp_pai_info['list_secend_hope_pai'].clear()
+							tmp_pai_info['list_secend_hope_pai'].extend(tmp_pai_info['list_max_hope_pai'])
+							tmp_pai_info['list_max_hope_pai'].clear()
+							tmp_pai_info['list_max_hope_pai'].append(j);
+							think_total_info[tmp_pai]=copy.deepcopy(tmp_pai_info)
+							
+						elif tmp_score == max_score:
+							#if tmp_pai in think_total_info:
+							think_total_info[tmp_pai]['list_max_hope_pai'].append(j)
+							
+						elif tmp_score == secend_max_score:
+							think_total_info[tmp_pai]['list_secend_hope_pai'].append(j)
 					self.dapai_spec(j)
 				self.mopai(tmp_pai)
 #				if len(self.list_hope_pai) == 0:
@@ -768,6 +775,7 @@ class player:
 							if self.pai_value(tmp_pai) < self.pai_value(the_best_pai):
 								the_best_pai = tmp_pai
 				else:
+					'''
 					if len(self.list_hope_pai) > 0:
 						tmp_max_score_pai_num = self.list_cant_see_left(self.list_hope_pai)
 
@@ -784,13 +792,15 @@ class player:
 						max_score_pai_num = 0
 					#print("da:",tmp_pai,"max_score:",max_score,"list_hope_pai",self.list_hope_pai)
 					self.list_hope_pai.clear()
-
+					'''
 		if self.ding == 'b':
 			for i in range(0, len(self.list_t)):
 				last_think_score = self.score
 				if last_think_pai == self.list_t[i]:
 					continue
 				tmp_pai = self.dapai_spec(self.list_t[i])
+				tmp_score = 0; max_score = 0; secend_max_score = 0; 
+
 				last_think_pai = tmp_pai
 				tmp_score = self.caculate_score()
 				if last_think_score > tmp_score + 1 and last_think_score < 13:
@@ -809,6 +819,7 @@ class player:
 					if level > 1:
 						tmp_player = copy.deepcopy(self)
 						tmp_best_pai,tmp_max_score,max_score_pai_num = tmp_player.think(1)
+						del tmp_player
 						if tmp_max_score >= 14:
 							if self.list_ding.count(self.ding)>=3 and max_score_pai_num > 0.9:
 								one_xiang_ting.append(j)
@@ -817,6 +828,7 @@ class player:
 								one_xiang_ting.append(j)
 								one_xiang_total_num = one_xiang_total_num + max_score_pai_num
 					else:
+						'''
 						if last_think_score < 8 and tmp_score < 11 and tmp_score > 8:
 							if max_score < 10:
 								self.list_hope_pai.clear()
@@ -831,6 +843,24 @@ class player:
 							self.list_hope_pai.append(j)
 						elif tmp_score == max_score:
 							self.list_hope_pai.append(j);max_score_pai = tmp_pai
+						'''
+						if tmp_score > max_score:
+							tmp_pai_info['max_score'] = tmp_score; tmp_pai_info['secend_max_score'] = max_score;
+
+							secend_max_score = max_score;
+							max_score = tmp_score; max_score_pai = tmp_pai;max_score_pai_num = 0
+							tmp_pai_info['list_secend_hope_pai'].clear()
+							tmp_pai_info['list_secend_hope_pai'].extend(tmp_pai_info['list_max_hope_pai'])
+							tmp_pai_info['list_max_hope_pai'].clear()
+							tmp_pai_info['list_max_hope_pai'].append(j);
+							think_total_info[tmp_pai]=copy.deepcopy(tmp_pai_info)
+							
+						elif tmp_score == max_score:
+							#if tmp_pai in think_total_info:
+							think_total_info[tmp_pai]['list_max_hope_pai'].append(j)
+							
+						elif tmp_score == secend_max_score:
+							think_total_info[tmp_pai]['list_secend_hope_pai'].append(j)
 					self.dapai_spec(j)
 				self.mopai(tmp_pai)
 #				if len(self.list_hope_pai) == 0:
@@ -854,7 +884,7 @@ class player:
 							if self.pai_value(tmp_pai) < self.pai_value(the_best_pai):
 								the_best_pai = tmp_pai
 				else:
-					
+					'''
 					if len(self.list_hope_pai) > 0:
 						tmp_max_score_pai_num = self.list_cant_see_left(self.list_hope_pai)
 
@@ -871,11 +901,14 @@ class player:
 						max_score_pai_num = 0
 					#print("da:",tmp_pai,"max_score:",max_score,"list_hope_pai",self.list_hope_pai)
 					self.list_hope_pai.clear()
+					'''
 			for i in range(0, len(self.list_w)):
 				last_think_score = self.score
 				if last_think_pai == self.list_w[i] + 10:
 					continue
 				tmp_pai = self.dapai_spec(self.list_w[i] + 10)
+				tmp_score = 0; max_score = 0; secend_max_score = 0; 
+
 				last_think_pai = tmp_pai
 				tmp_score = self.caculate_score()
 				if last_think_score > tmp_score + 1 and last_think_score < 13:
@@ -894,6 +927,7 @@ class player:
 					if level > 1:
 						tmp_player = copy.deepcopy(self)
 						tmp_best_pai,tmp_max_score,max_score_pai_num = tmp_player.think(1)
+						del tmp_player
 						if tmp_max_score >= 14:
 							if self.list_ding.count(self.ding)>=3 and max_score_pai_num > 0.9:
 								one_xiang_ting.append(j)
@@ -902,6 +936,7 @@ class player:
 								one_xiang_ting.append(j)
 								one_xiang_total_num = one_xiang_total_num + max_score_pai_num
 					else:
+						'''
 						if last_think_score < 8 and tmp_score < 11 and tmp_score > 8:
 							if max_score < 10:
 								self.list_hope_pai.clear()
@@ -916,6 +951,24 @@ class player:
 							self.list_hope_pai.append(j)
 						elif tmp_score == max_score:
 							self.list_hope_pai.append(j);max_score_pai = tmp_pai
+						'''
+						if tmp_score > max_score:
+							tmp_pai_info['max_score'] = tmp_score; tmp_pai_info['secend_max_score'] = max_score;
+
+							secend_max_score = max_score;
+							max_score = tmp_score; max_score_pai = tmp_pai;max_score_pai_num = 0
+							tmp_pai_info['list_secend_hope_pai'].clear()
+							tmp_pai_info['list_secend_hope_pai'].extend(tmp_pai_info['list_max_hope_pai'])
+							tmp_pai_info['list_max_hope_pai'].clear()
+							tmp_pai_info['list_max_hope_pai'].append(j);
+							think_total_info[tmp_pai]=copy.deepcopy(tmp_pai_info)
+							
+						elif tmp_score == max_score:
+							#if tmp_pai in think_total_info:
+							think_total_info[tmp_pai]['list_max_hope_pai'].append(j)
+							
+						elif tmp_score == secend_max_score:
+							think_total_info[tmp_pai]['list_secend_hope_pai'].append(j)
 					self.dapai_spec(j)
 				self.mopai(tmp_pai)
 #				if len(self.list_hope_pai) == 0:
@@ -939,7 +992,7 @@ class player:
 							if self.pai_value(tmp_pai) < self.pai_value(the_best_pai):
 								the_best_pai = tmp_pai
 				else:
-					
+					'''
 					if len(self.list_hope_pai) > 0:
 						tmp_max_score_pai_num = self.list_cant_see_left(self.list_hope_pai)
 
@@ -956,7 +1009,36 @@ class player:
 						max_score_pai_num = 0
 					#print("da:",tmp_pai,"max_score:",max_score,"list_hope_pai",self.list_hope_pai)
 					self.list_hope_pai.clear()
+					'''
 		
+		if level == 1:
+			tmp_total_info = {}; max_score = 0; max_score_pai_num = 0;
+
+			for key in think_total_info:
+				if think_total_info[key]['max_score'] > max_score:
+					tmp_total_info.clear();
+					tmp_total_info[key]= think_total_info[key];
+					max_score = think_total_info[key]['max_score']
+				elif think_total_info[key]['max_score'] == max_score:
+					tmp_total_info[key]= think_total_info[key];
+			for key in tmp_total_info:
+				tmp_total_info[key]['max_score_num'] = self.list_cant_see_left(tmp_total_info[key]['list_max_hope_pai'])
+				if tmp_total_info[key]['max_score_num'] > max_score_pai_num + 0.1:
+					max_score_pai_num = tmp_total_info[key]['max_score_num']
+					secend_max_score = tmp_total_info[key]['secend_max_score']
+					secend_max_score_pai_num = self.list_cant_see_left(tmp_total_info[key]['list_secend_hope_pai'])
+					the_best_pai = key
+					if max_score >= 14:
+						self.hu_pai_left_num = max_score_pai_num
+				elif tmp_total_info[key]['max_score_num'] >= max_score_pai_num - 0.1 and \
+				tmp_total_info[key]['max_score_num'] <= max_score_pai_num + 0.1 and max_score_pai_num !=0 and max_score < 14:
+					if tmp_total_info[key]['secend_max_score'] > secend_max_score:
+						the_best_pai = key; 
+					elif tmp_total_info[key]['secend_max_score'] == secend_max_score:
+						tmp_secend_max_score_pai_num = self.list_cant_see_left(tmp_total_info[key]['list_secend_hope_pai'])
+						if tmp_secend_max_score_pai_num > secend_max_score_pai_num + 0.1:
+							the_best_pai = key;
+
 		return the_best_pai,max_score,max_score_pai_num
 
 

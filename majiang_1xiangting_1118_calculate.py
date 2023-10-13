@@ -77,162 +77,62 @@ class player:
 			self.list_b.remove(pai-20)
 		return pai
 
-	def guzhang2(self):
-		if self.ding == 't':
+	def guzhang_smart(self):
+		list_guzhang = []
+		for pai in self.list_t:
+			if pai>=3 and pai<=7 or self.list_ding.count('t') > 1:
+				continue
+			if self.list_t.count(pai) == 1 and self.list_t.count(pai-1) == 0 and self.list_t.count(pai-2) == 0 and \
+			self.list_t.count(pai+1) == 0 and self.list_t.count(pai+2) == 0:
+				list_guzhang.append(pai)
 
-			if self.list_w.count(1) == 1 and self.list_w.count(2) == 0 and self.list_w.count(3) == 1 and self.list_w.count(4) != 0:
-				return 11
-			if self.list_w.count(9) == 1 and self.list_w.count(8) == 0 and self.list_w.count(7) == 1 and self.list_w.count(6) != 0:
-				return 19
-			if self.list_b.count(1) == 1 and self.list_b.count(2) == 0 and self.list_b.count(3) == 1 and self.list_b.count(4) != 0:
-				return 21
-			if self.list_b.count(9) == 1 and self.list_b.count(8) == 0 and self.list_b.count(7) == 1 and self.list_b.count(6) != 0:
-				return 29
-		if self.ding == 'w':
-			if self.list_t.count(1) == 1 and self.list_t.count(2) == 0 and self.list_t.count(3) == 1 and self.list_t.count(4) != 0:
+		for pai in self.list_w:
+			if pai>=3 and pai<=7 or self.list_ding.count('w') > 1:
+				continue
+			if self.list_w.count(pai) == 1 and self.list_w.count(pai-1) == 0 and self.list_w.count(pai-2) == 0 and \
+			self.list_w.count(pai+1) == 0 and self.list_w.count(pai+2) == 0:
+				list_guzhang.append(pai+10)
+		
+		for pai in self.list_b:
+			if pai>=3 and pai<=7 or self.list_ding.count('b') > 1:
+				continue
+			if self.list_b.count(pai) == 1 and self.list_b.count(pai-1) == 0 and self.list_b.count(pai-2) == 0 and \
+			self.list_b.count(pai+1) == 0 and self.list_b.count(pai+2) == 0:
+				list_guzhang.append(pai+20)
+		return list_guzhang
+	
+	def check_special_model(self):
+		if self.list_t.count(1) == 1 and self.list_t.count(2) == 1 and self.list_t.count(3) == 0 and self.cant_see_left(3) == 0:
+			if self.cant_see_left(2) <= 1:
+				return 2
+			else:
 				return 1
-			if self.list_t.count(9) == 1 and self.list_t.count(8) == 0 and self.list_t.count(7) == 1 and self.list_t.count(6) != 0:
-				return 9
-			if self.list_b.count(1) == 1 and self.list_b.count(2) == 0 and self.list_b.count(3) == 1 and self.list_b.count(4) != 0:
-				return 21
-			if self.list_b.count(9) == 1 and self.list_b.count(8) == 0 and self.list_b.count(7) == 1 and self.list_b.count(6) != 0:
-				return 29
-		if self.ding == 'b':
-			if self.list_w.count(1) == 1 and self.list_w.count(2) == 0 and self.list_w.count(3) == 1 and self.list_w.count(4) != 0:
+		if self.list_w.count(1) == 1 and self.list_w.count(2) == 1 and self.list_w.count(3) == 0 and self.cant_see_left(13) == 0:
+			if self.cant_see_left(12) <= 1:
+				return 12
+			else:
 				return 11
-			if self.list_w.count(9) == 1 and self.list_w.count(8) == 0 and self.list_w.count(7) == 1 and self.list_w.count(6) != 0:
-				return 19
-			if self.list_t.count(1) == 1 and self.list_t.count(2) == 0 and self.list_t.count(3) == 1 and self.list_t.count(4) != 0:
-				return 1
-			if self.list_t.count(9) == 1 and self.list_t.count(8) == 0 and self.list_t.count(7) == 1 and self.list_t.count(6) != 0:
+		if self.list_b.count(1) == 1 and self.list_b.count(2) == 1 and self.list_b.count(3) == 0 and self.cant_see_left(23) == 0:
+			if self.cant_see_left(22) <= 1:
+				return 22
+			else:
+				return 21
+		if self.list_t.count(9) == 1 and self.list_t.count(8) == 1 and self.list_t.count(7) == 0 and self.cant_see_left(7) == 0:
+			if self.cant_see_left(8) <= 1:
+				return 8
+			else:
 				return 9
+		if self.list_w.count(9) == 1 and self.list_w.count(8) == 1 and self.list_w.count(7) == 0 and self.cant_see_left(17) == 0:
+			if self.cant_see_left(18) <= 1:
+				return 18
+			else:
+				return 19
+		if self.list_b.count(9) == 1 and self.list_b.count(8) == 1 and self.list_b.count(7) == 0 and self.cant_see_left(27) == 0:
+			if self.cant_see_left(28) <= 1:
+				return 28
+			else:
+				return 29
 		return 0
-
-	def t_duoque_b_guzhang(self):
-		if self.list_w.count(1) == 1 and self.list_w.count(2) == 0 and self.list_w.count(3) == 0:
-			return 11
-		if self.list_w.count(9) == 1 and self.list_w.count(8) == 0 and self.list_w.count(7) == 0:
-			return 19
-		if self.list_w.count(1) == 0 and self.list_w.count(2) == 1 and self.list_w.count(3) == 0 and self.list_w.count(4) == 0:
-			return 12
-		if self.list_w.count(9) == 0 and self.list_w.count(8) == 1 and self.list_w.count(7) == 0 and self.list_w.count(6) == 0:
-			return 18
-		if self.list_b.count(1) == 1 and self.list_b.count(2) == 0 and self.list_b.count(3) == 0:
-			return 21
-		if self.list_b.count(9) == 1 and self.list_b.count(8) == 0 and self.list_b.count(7) == 0:
-			return 29
-		return 0
-	def t_duoque_w_guzhang(self):
-		if self.list_b.count(1) == 1 and self.list_b.count(2) == 0 and self.list_b.count(3) == 0:
-			return 21
-		if self.list_b.count(9) == 1 and self.list_b.count(8) == 0 and self.list_b.count(7) == 0:
-			return 29
-		if self.list_b.count(1) == 0 and self.list_b.count(2) == 1 and self.list_b.count(3) == 0 and self.list_b.count(4) == 0:
-			return 22
-		if self.list_b.count(9) == 0 and self.list_b.count(8) == 1 and self.list_b.count(7) == 0 and self.list_b.count(6) == 0:
-			return 28
-		if self.list_w.count(1) == 1 and self.list_w.count(2) == 0 and self.list_w.count(3) == 0:
-			return 11
-		if self.list_w.count(9) == 1 and self.list_w.count(8) == 0 and self.list_w.count(7) == 0:
-			return 19
-		return 0
-
-	def w_duoque_t_guzhang(self):
-		if self.list_b.count(1) == 1 and self.list_b.count(2) == 0 and self.list_b.count(3) == 0:
-			return 21
-		if self.list_b.count(9) == 1 and self.list_b.count(8) == 0 and self.list_b.count(7) == 0:
-			return 29
-		if self.list_b.count(1) == 0 and self.list_b.count(2) == 1 and self.list_b.count(3) == 0 and self.list_b.count(4) == 0:
-			return 22
-		if self.list_b.count(9) == 0 and self.list_b.count(8) == 1 and self.list_b.count(7) == 0 and self.list_b.count(6) == 0:
-			return 28
-		if self.list_t.count(1) == 1 and self.list_t.count(2) == 0 and self.list_t.count(3) == 0:
-			return 1
-		if self.list_t.count(9) == 1 and self.list_t.count(8) == 0 and self.list_t.count(7) == 0:
-			return 9
-		return 0
-	def w_duoque_b_guzhang(self):
-		if self.list_t.count(1) == 1 and self.list_t.count(2) == 0 and self.list_t.count(3) == 0:
-			return 1
-		if self.list_t.count(9) == 1 and self.list_t.count(8) == 0 and self.list_t.count(7) == 0:
-			return 9
-		if self.list_t.count(1) == 0 and self.list_t.count(2) == 1 and self.list_t.count(3) == 0 and self.list_t.count(4) == 0:
-			return 2
-		if self.list_t.count(9) == 0 and self.list_t.count(8) == 1 and self.list_t.count(7) == 0 and self.list_t.count(6) == 0:
-			return 8
-		if self.list_b.count(1) == 1 and self.list_b.count(2) == 0 and self.list_b.count(3) == 0:
-			return 21
-		if self.list_b.count(9) == 1 and self.list_b.count(8) == 0 and self.list_b.count(7) == 0:
-			return 29
-		return 0
-
-	def b_duoque_t_guzhang(self):
-		if self.list_w.count(1) == 1 and self.list_w.count(2) == 0 and self.list_w.count(3) == 0:
-			return 11
-		if self.list_w.count(9) == 1 and self.list_w.count(8) == 0 and self.list_w.count(7) == 0:
-			return 19
-		if self.list_w.count(1) == 0 and self.list_w.count(2) == 1 and self.list_w.count(3) == 0 and self.list_w.count(4) == 0:
-			return 12
-		if self.list_w.count(9) == 0 and self.list_w.count(8) == 1 and self.list_w.count(7) == 0 and self.list_w.count(6) == 0:
-			return 18
-		if self.list_t.count(1) == 1 and self.list_t.count(2) == 0 and self.list_t.count(3) == 0:
-			return 1
-		if self.list_t.count(9) == 1 and self.list_t.count(8) == 0 and self.list_t.count(7) == 0:
-			return 9
-		return 0
-
-	def b_duoque_w_guzhang(self):
-		if self.list_t.count(1) == 1 and self.list_t.count(2) == 0 and self.list_t.count(3) == 0:
-			return 1
-		if self.list_t.count(9) == 1 and self.list_t.count(8) == 0 and self.list_t.count(7) == 0:
-			return 9
-		if self.list_t.count(1) == 0 and self.list_t.count(2) == 1 and self.list_t.count(3) == 0 and self.list_t.count(4) == 0:
-			return 2
-		if self.list_t.count(9) == 0 and self.list_t.count(8) == 1 and self.list_t.count(7) == 0 and self.list_t.count(6) == 0:
-			return 8
-		if self.list_w.count(1) == 1 and self.list_w.count(2) == 0 and self.list_w.count(3) == 0:
-			return 11
-		if self.list_w.count(9) == 1 and self.list_w.count(8) == 0 and self.list_w.count(7) == 0:
-			return 19
-		return 0
-
-	def guzhang(self):
-		if len(self.user_desk.list_tuple) >= 15 and self.score < 11:
-			if self.ding == 't':
-				if self.list_ding.count('b') >= 2:
-					return self.t_duoque_b_guzhang()
-			
-				elif self.list_ding.count('w') >= 2:
-					return self.t_duoque_w_guzhang()
-				else:
-					pai = self.t_duoque_w_guzhang()
-					if pai == 0:
-						return self.t_duoque_b_guzhang()
-					return pai
-			if self.ding == 'w':
-				if self.list_ding.count('t') >= 2:
-					return self.w_duoque_t_guzhang()
-				elif self.list_ding.count('b') >= 2:
-					return self.w_duoque_b_guzhang()
-				else:
-					pai = self.w_duoque_b_guzhang()
-					if pai == 0:
-						return self.w_duoque_t_guzhang()
-					return pai
-				
-			if self.ding == 'b':
-				if self.list_ding.count('t') >= 2:
-					return self.b_duoque_t_guzhang()
-				elif self.list_ding.count('w') >= 2:
-					return self.b_duoque_w_guzhang()
-				else:
-					pai = self.b_duoque_w_guzhang()
-					if pai == 0:
-						return self.b_duoque_t_guzhang()
-					return pai
-		else:
-			return 0
-
 	def if_nengmo(self,pai):
 		if pai < 10:
 			if self.cant_see_left(pai):
@@ -245,6 +145,7 @@ class player:
 				return 0
 		return 1
 
+
 	def dapai(self):
 		if self.ding == 't' and len(self.list_t) > 0:
 			self.da = self.list_t.pop()
@@ -253,9 +154,14 @@ class player:
 		elif self.ding == 'b' and len(self.list_b) > 0:
 			self.da = self.list_b.pop()+20
 		else:
-			gupai = self.guzhang()
-			if gupai > 0:
-				self.da = self.dapai_spec(gupai)
+			gupai_list = self.guzhang_smart()
+			da_gupai = 0; gupai_value = 100;
+			if len(gupai_list) > 0:
+				for gupai in gupai_list:
+					self.pai_value(gupai) < gupai_value
+					da_gupai = gupai; gupai_value = self.pai_value(gupai)
+				self.da = self.dapai_spec(da_gupai)
+		
 			elif self.score >= 8 and self.score < 11 and len(self.nenpeng) < 4 or self.xia_jiao == 0 and self.score >= 11:
 				best_pai,max_score,max_score_pai_num = self.think(2)
 				if best_pai == 0:
@@ -289,7 +195,7 @@ class player:
 				best_pai,max_score,max_score_pai_num = self.think(1)
 				if max_score >= 14:
 					return pai
-				elif self.guzhang() > 0:
+				elif len(self.guzhang_smart()) > 0:
 					return pai
 				else:
 #					self.nenpeng.append(pai)
