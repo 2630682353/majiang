@@ -87,59 +87,34 @@ class player:
 
 	def guzhang_smart(self):
 		list_guzhang = []
-		for pai in self.list_t:
-			if pai>=3 and pai<=7 or self.list_ding.count('t') > 1:
-				continue
-			if self.list_t.count(pai) == 1 and self.list_t.count(pai-1) == 0 and self.list_t.count(pai-2) == 0 and \
-			self.list_t.count(pai+1) == 0 and self.list_t.count(pai+2) == 0:
-				list_guzhang.append(pai)
-
-		for pai in self.list_w:
-			if pai>=3 and pai<=7 or self.list_ding.count('w') > 1:
-				continue
-			if self.list_w.count(pai) == 1 and self.list_w.count(pai-1) == 0 and self.list_w.count(pai-2) == 0 and \
-			self.list_w.count(pai+1) == 0 and self.list_w.count(pai+2) == 0:
-				list_guzhang.append(pai+10)
-		
-		for pai in self.list_b:
-			if pai>=3 and pai<=7 or self.list_ding.count('b') > 1:
-				continue
-			if self.list_b.count(pai) == 1 and self.list_b.count(pai-1) == 0 and self.list_b.count(pai-2) == 0 and \
-			self.list_b.count(pai+1) == 0 and self.list_b.count(pai+2) == 0:
-				list_guzhang.append(pai+20)
+		cal_list1, cal_list2, list1_type, list2_type = self.get_pai_list()
+		for x in range(0, 2):
+			if x == 1:
+				cal_list1 = cal_list2; list1_type = list2_type
+			for pai in cal_list1:
+				if pai>=3 and pai<=7:
+					continue
+				if cal_list1.count(pai) == 1 and cal_list1.count(pai-1) == 0 and cal_list1.count(pai-2) == 0 and \
+				cal_list1.count(pai+1) == 0 and cal_list1.count(pai+2) == 0:
+					list_guzhang.append(item_to_spec(pai, list1_type))
 		return list_guzhang
 	
 	def check_special_model(self):
-		if self.list_t.count(1) == 1 and self.list_t.count(2) == 1 and self.list_t.count(3) == 0 and self.cant_see_left(3) == 0:
-			if self.cant_see_left(2) <= 1:
-				return 2
-			else:
-				return 1
-		if self.list_w.count(1) == 1 and self.list_w.count(2) == 1 and self.list_w.count(3) == 0 and self.cant_see_left(13) == 0:
-			if self.cant_see_left(12) <= 1:
-				return 12
-			else:
-				return 11
-		if self.list_b.count(1) == 1 and self.list_b.count(2) == 1 and self.list_b.count(3) == 0 and self.cant_see_left(23) == 0:
-			if self.cant_see_left(22) <= 1:
-				return 22
-			else:
-				return 21
-		if self.list_t.count(9) == 1 and self.list_t.count(8) == 1 and self.list_t.count(7) == 0 and self.cant_see_left(7) == 0:
-			if self.cant_see_left(8) <= 1:
-				return 8
-			else:
-				return 9
-		if self.list_w.count(9) == 1 and self.list_w.count(8) == 1 and self.list_w.count(7) == 0 and self.cant_see_left(17) == 0:
-			if self.cant_see_left(18) <= 1:
-				return 18
-			else:
-				return 19
-		if self.list_b.count(9) == 1 and self.list_b.count(8) == 1 and self.list_b.count(7) == 0 and self.cant_see_left(27) == 0:
-			if self.cant_see_left(28) <= 1:
-				return 28
-			else:
-				return 29
+		cal_list1, cal_list2, list1_type, list2_type = self.get_pai_list()
+		for x in range(0, 2):
+			if x == 1:
+				cal_list1 = cal_list2; list1_type = list2_type
+			if cal_list1.count(1) == 1 and cal_list1.count(2) == 1 and cal_list1.count(3) == 0 and self.cant_see_left(item_to_spec(3, list1_type)) == 0:
+				if self.cant_see_left(item_to_spec(2, list1_type)) <= 1:
+					return item_to_spec(2, list1_type)
+				else:
+					return item_to_spec(1, list1_type)
+			
+			if cal_list1.count(9) == 1 and cal_list1.count(8) == 1 and cal_list1.count(7) == 0 and self.cant_see_left(item_to_spec(7, list1_type)) == 0:
+				if self.cant_see_left(item_to_spec(8, list1_type)) <= 1:
+					return item_to_spec(8, list1_type)
+				else:
+					return item_to_spec(9, list1_type)
 		return 0
 	def if_nengmo(self,pai):
 		if pai < 10:
@@ -296,33 +271,18 @@ class player:
 	def check_xiajiao(self):
 		tmp_player = copy.deepcopy(self)
 		max_score = 0
-		if tmp_player.ding == 't':
-			for j in range(11, 30):
-				if j == 20:
-					continue
-				if self.cant_see_left(j) > 0:
-					tmp_player.mopai(j)
-					if tmp_player.score > max_score:
-						max_score = tmp_player.score;
-					tmp_player.dapai_spec(j)
-		elif tmp_player.ding == 'w':
-			for j in range(1, 30):
-				if j > 9 and j < 21:
-					continue
-				if self.cant_see_left(j) > 0:
-					tmp_player.mopai(j)
-					if tmp_player.score > max_score:
-						max_score = tmp_player.score;
-					tmp_player.dapai_spec(j)
-		elif tmp_player.ding == 'b':
-			for j in range(1, 20):
-				if j == 10:
-					continue
-				if self.cant_see_left(j) > 0:
-					tmp_player.mopai(j)
-					if tmp_player.score > max_score:
-						max_score = tmp_player.score;
-					tmp_player.dapai_spec(j)
+		for j in range(1, 30):
+			if (j < 11 or j == 20) and self.ding == 't':
+				continue
+			elif j > 9 and j < 21 and self.ding == 'w':
+				continue
+			elif (j == 10 or j > 19) and self.ding == 'b':
+				continue
+			if self.cant_see_left(j) > 0:
+				tmp_player.mopai(j)
+				if tmp_player.score > max_score:
+					max_score = tmp_player.score;
+				tmp_player.dapai_spec(j)
 		del tmp_player
 		if max_score >= 14:
 			return 1
@@ -339,18 +299,7 @@ class player:
 		{'max_score':0, 'secend_max_score':0, 'list_max_hope_pai':[], 'list_secend_hope_pai':[], 'max_score_num':0, 'send_score_num':0};
 		self.list_hope_pai.clear()
 		self.hu_pai_left_num = 0
-		cal_list1 = []; cal_list2 = [];
-		list1_type = 'n'; list2_type = 'n';
-		if self.ding == 't':
-			cal_list1 = self.list_w; cal_list2 = self.list_b;
-			list1_type = 'w'; list2_type = 'b'
-		elif (self.ding == 'w'):
-			cal_list1 = self.list_t; cal_list2 = self.list_b;
-			list1_type = 't'; list2_type = 'b'
-		elif (self.ding == 'b'):
-			cal_list1 = self.list_t; cal_list2 = self.list_w;
-			list1_type = 't'; list2_type = 'w'
-		step_min = 1; step_max = 30;
+		cal_list1, cal_list2, list1_type, list2_type = self.get_pai_list()
 		for x in range(0, 2):
 			if x == 1:
 				cal_list1 = cal_list2; list1_type = list2_type
@@ -368,7 +317,7 @@ class player:
 					continue
 				one_xiang_ting.clear()
 				one_xiang_total_num = 0
-				for j in range(step_min, step_max):
+				for j in range(1, 30):
 					if (j < 11 or j == 20) and self.ding == 't':
 						continue
 					elif j > 9 and j < 21 and self.ding == 'w':
@@ -542,6 +491,7 @@ class player:
 			return total1
 		else:
 			return total
+		
 	def group_shunzi_deep(self,list_x):
 		total = 0;
 		i = 0
@@ -600,33 +550,17 @@ class player:
 		elif score_b == min(list_score):
 			self.ding = 'b'
 
-
-	#def think(self):
-		
-
 	def caculate_score(self):
 		score = 0;
 		nodui_score = 0;
 		num_nen_peng = 0;
-		if self.ding == 't':
-			if self.cal_dui(self.list_w, self.list_b) == 7:
-				return 14
-			nodui_score = self.group_shunzi(self.list_w)*3 + self.group_shunzi(self.list_b)*3
-			num_nen_peng = self.find_nen_peng(nodui_score)
-			nodui_score = nodui_score + len(self.have_peng)*3 + len(self.have_gang)*3	
-		elif self.ding == 'w':
-			if self.cal_dui(self.list_t, self.list_b) == 7:
-				return 14
-			nodui_score = self.group_shunzi(self.list_t)*3 + self.group_shunzi(self.list_b)*3
-			num_nen_peng = self.find_nen_peng(nodui_score)
-			nodui_score = nodui_score + len(self.have_peng)*3 + len(self.have_gang)*3	
-		elif self.ding == 'b':
-			if self.cal_dui(self.list_t, self.list_w) == 7:
-				return 14
-			nodui_score = self.group_shunzi(self.list_t)*3 + self.group_shunzi(self.list_w)*3
-			num_nen_peng = self.find_nen_peng(nodui_score)
-			nodui_score = nodui_score + len(self.have_peng)*3 + len(self.have_gang)*3
-			
+		cal_list1, cal_list2, list1_type, list2_type = self.get_pai_list()
+		if self.cal_dui(cal_list1, cal_list2) == 7:
+			return 14
+		nodui_score = self.group_shunzi(cal_list1)*3 + self.group_shunzi(cal_list2)*3
+		num_nen_peng = self.find_nen_peng(nodui_score)
+		nodui_score = nodui_score + len(self.have_peng)*3 + len(self.have_gang)*3	
+		
 		if num_nen_peng > 0 and num_nen_peng <= 3:
 				score = nodui_score + num_nen_peng + 1   #计算分数
 		elif num_nen_peng > 3:
@@ -641,17 +575,7 @@ class player:
 		gang_pai = 0;
 		tmp_player = copy.deepcopy(self)
 		i = 0;
-		cal_list1 = []; cal_list2 = [];
-		list1_type = 'n'; list2_type = 'n';
-		if tmp_player.ding == 't':
-			cal_list1 = tmp_player.list_w; cal_list2 = tmp_player.list_b;
-			list1_type = 'w'; list2_type = 'b'
-		elif (self.ding == 'w'):
-			cal_list1 = tmp_player.list_t; cal_list2 = tmp_player.list_b;
-			list1_type = 't'; list2_type = 'b'
-		elif (self.ding == 'b'):
-			cal_list1 = tmp_player.list_t; cal_list2 = tmp_player.list_w;
-			list1_type = 't'; list2_type = 'w'
+		cal_list1, cal_list2, list1_type, list2_type = self.get_pai_list()
 		for x in range(0, 2):
 			i = 0
 			if x == 1:
@@ -675,12 +599,8 @@ class player:
 					i = i + 1
 		del tmp_player
 		return gang_pai
-
-	def find_nen_peng(self,nodui_score):
-		self.nenpeng.clear()
-		self.list_dui.clear()
-		self.left_pai_peng.clear()
-		score = 0;nenpeng_num = 0;tmp_score = 0
+	
+	def get_pai_list(self):
 		cal_list1 = []; cal_list2 = [];
 		list1_type = 'n'; list2_type = 'n';
 		if self.ding == 't':
@@ -692,6 +612,14 @@ class player:
 		elif (self.ding == 'b'):
 			cal_list1 = self.list_t; cal_list2 = self.list_w;
 			list1_type = 't'; list2_type = 'w'
+		return cal_list1, cal_list2, list1_type, list2_type
+
+	def find_nen_peng(self,nodui_score):
+		self.nenpeng.clear()
+		self.list_dui.clear()
+		self.left_pai_peng.clear()
+		score = 0;nenpeng_num = 0;tmp_score = 0
+		cal_list1, cal_list2, list1_type, list2_type = self.get_pai_list()
 		
 		num_dui = self.cal_dui(cal_list1, cal_list2)
 		i = 0
@@ -813,8 +741,6 @@ class player:
 					if left1 == 0 or left2 == 0:
 						return 1
 		return 0
-
-
 
 	def cant_see_left(self,pai):
 		list_pai = copy.copy(self.list_t)
@@ -938,12 +864,8 @@ def test_spec():
 
 
 play_times = 5;
-hu_user1 = 0;
-hu_user2 = 0
-hu_user3 = 0
-hu_user4 = 0
-no_user_hu = 0
-err_start =0
+hu_user1 = 0;hu_user2 = 0;hu_user3 = 0;hu_user4 = 0
+no_user_hu = 0;err_start =0
 
 ticks1 = time.time()
 desk1 = desk()
@@ -953,14 +875,8 @@ hu_state = [[]]
 hu_one_state = []
 for x in range(0, 100):
 
-	p1 = player()
-	p1.name = "p1"
-	p2 = player()
-	p2.name = "p2"
-	p3 = player()
-	p3.name = "p3"
-	p4 = player()
-	p4.name = "p4"
+	p1 = player();p1.name = "p1";p2 = player();p2.name = "p2"
+	p3 = player();p3.name = "p3";p4 = player();p4.name = "p4"
 	list_player = [p1,p2,p3,p4]
 	desk1.list_total_player = [p1,p2,p3,p4]
 	desk1.list_player = [p1,p2,p3,p4]
@@ -1002,9 +918,6 @@ for x in range(0, 100):
 		list_player[i].user_desk = desk1
 		for j in range(0, 4):
 			list_player[j].list_ding.append(list_player[i].ding)
-
-
-
 
 	p1.human = 1
 	index = 0
