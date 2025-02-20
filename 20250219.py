@@ -4,6 +4,8 @@ import os
 import sys
 import random
 
+is_human_play = 0
+
 class desk:
 	list_tuple = []; list_river = []
 	list_ding = []; list_player = []
@@ -24,7 +26,16 @@ def item_to_spec(list_val, type):
 		return list_val + 10
 	elif (type == 'b'):
 		return list_val + 20
-
+def how_many_type(list1):
+	tt = 0; tw = 0; tb = 0;
+	for pai in list1:
+		if pai < 10:
+			tt+=1
+		if pai > 10 and pai < 20:
+			tw+=1
+		if pai > 20:
+			tb+=1
+	return tt+tw+tb
 
 class player:
 	list_t = [];list_w = [];list_b= []; list_hope_pai = []; secend_list_hope_pai = []; list_river = [];
@@ -448,7 +459,67 @@ class player:
 
 		return the_best_pai,max_score,max_score_pai_num
 
-
+	def calculate_money(self):
+		cal_list1, cal_list2, list1_type, list2_type = self.get_pai_list()
+		tmp_list1 = copy.copy(cal_list1); tmp_list2 = copy.copy(cal_list2)
+		cal_list3 = cal_list1
+		total_double = 0;
+		i = 0;
+		is_normal = 0; gang_num = 0; is_qing = 0; is_seven_dui = 0;
+		if self.cal_dui(cal_list1, cal_list2) == 7:
+			is_seven_dui = 1
+		gang_num += len(self.have_gang)
+		list_r = copy.copy(self.have_peng)
+		list_r.extend(self.have_gang)
+		for item in self.list_t:
+			list_r.append(item)
+		for item in self.list_w:
+			list_r.append(item + 10)
+		for item in self.list_b:
+			list_r.append(item + 20)
+		if how_many_type(list_r) == 1:
+			is_qing = 1;
+		del list_r
+		for x in range(0, 2):
+			if x == 1:
+				cal_list1 = cal_list2
+			while i < len(cal_list1):
+				if cal_list1.count(cal_list1[i]) > 3:
+					is_normal = 1
+					gang_num+=1
+					i = i + 4;
+				else:
+					i = i+1
+		cal_list1 = cal_list3
+		i = 0
+		if is_normal == 0 and is_seven_dui == 0:
+			for x in range(0, 2):
+				if x == 1:
+					del tmp_list1
+					tmp_list1 = tmp_list2
+					cal_list1 = cal_list2
+				while i < len(cal_list1):
+					if cal_list1.count(cal_list1[i]) == 3:
+						tmp_list1.remove(cal_list1[i]);
+						tmp_list1.remove(cal_list1[i]);
+						tmp_list1.remove(cal_list1[i]);
+						i = i + 3
+					else:
+						i = i+1
+				if len(tmp_list1) > 2 or len(tmp_list1) == 1:
+					is_normal = 1
+				elif len(tmp_list1) == 2 and tmp_list1[0] != tmp_list1[1]:
+					is_normal = 1
+		if is_seven_dui == 1:
+			total_double += 2
+		elif is_normal == 0:
+			total_double += 1
+			
+		if is_qing == 1:
+			total_double += 2
+		total_double+=gang_num
+		return 2**total_double
+			
 	def group_shunzi(self, list_y):
 		list_x = copy.copy(list_y)
 		total1 = 0;
@@ -678,6 +749,13 @@ class player:
 				i = i + 1
 			i = i + 1 
 		return num_dui
+	def how_many_pai(self, pai):
+		if pai < 10:
+			return self.list_t.count(pai)
+		elif pai < 20:
+			return self.list_w.count(pai - 10)
+		elif pai <30:
+			return self.list_b.count(pai - 20)
 
 	def pai_value_deep(self,pai):
 		if pai < 10:
@@ -865,7 +943,8 @@ def test_spec():
 
 play_times = 5;
 hu_user1 = 0;hu_user2 = 0;hu_user3 = 0;hu_user4 = 0
-no_user_hu = 0;err_start =0
+no_user_hu = 0;no_hu_xiaojiao = [0,0,0,0,0]; hu_user3_xiajiao = [0,0,0,0]
+err_start =0
 
 ticks1 = time.time()
 desk1 = desk()
@@ -873,7 +952,7 @@ list_tmp_tuple = []
 total_hu = []
 hu_state = [[]]
 hu_one_state = []
-for x in range(0, 100):
+for x in range(0, 10):
 
 	p1 = player();p1.name = "p1";p2 = player();p2.name = "p2"
 	p3 = player();p3.name = "p3";p4 = player();p4.name = "p4"
@@ -932,7 +1011,10 @@ for x in range(0, 100):
 		list_player[index].mopai(desk1.list_tuple.pop())
 		list_player[index].show()
 		if list_player[index].score >= 14:
-			print(list_player[index].name," hu le ####################################")
+			if list_player[index].name == 'p1' and is_human_play == 1:
+				pai = 2
+			print(list_player[index].name," hu le ####################################", " money:",
+				 list_player[index].calculate_money())
 			hu_one_state.append(list_player[index].name)
 			list_player.pop(index)
 			count_player = count_player -1
@@ -946,6 +1028,8 @@ for x in range(0, 100):
 			else:
 				go_out = 0
 				while 1 == 1:
+					if is_human_play == 1 and list_player[index].name == 'p1':
+						pai = 2
 					pai = list_player[index].dapai()
 					list_player[index].find_nen_gang()
 					desk1.list_river.append(pai)
@@ -958,7 +1042,8 @@ for x in range(0, 100):
 								continue
 							list_player[i].mopai(pai)
 							if list_player[i].score >= 14:
-								print("pai:",pai,"dian pao le #############################",list_player[i].name)
+								print("pai:",pai,"dian pao le #############################",list_player[i].name,
+									" money:",list_player[index].calculate_money())
 								list_player[i].show()
 								hu_one_state.append(list_player[i].name)
 								total_hu.append(i)
@@ -980,6 +1065,11 @@ for x in range(0, 100):
 						for i in range(0, count_player):
 							if index == i:
 								continue
+							if list_player[i].name == 'p1' and is_human_play == 1:
+								if list_player[i].how_many_pai(pai) == 3:
+									pai = 3
+								elif list_player[i].how_many_pai(pai) == 2:
+									pai = 2
 							if pai == list_player[i].dian_gang(pai):
 								print("pai:",pai,"bei gang le **************************",list_player[i].name)
 								list_player[i].show()
@@ -1008,14 +1098,26 @@ for x in range(0, 100):
 		hu_user2 = hu_user2 + 1
 	elif len(list_player) == 3:
 		hu_user1 = hu_user1 + 1
+		xia_jiao_num = 0;
+		for i in range(0, len(list_player)):
+			if list_player[i].xia_jiao == 1:
+				xia_jiao_num+=1
+		hu_user3_xiajiao[xia_jiao_num]+=1
 	elif len(list_player) == 4:
 		no_user_hu = no_user_hu + 1
+		xia_jiao_num = 0;
+		for i in range(0, len(list_player)):
+			if list_player[i].xia_jiao == 1:
+				xia_jiao_num+=1
+		no_hu_xiaojiao[xia_jiao_num]+=1
+			
 
 	print("no_user_hu:",no_user_hu,"hu_user1:",hu_user1,"hu_user2:",hu_user2,"hu_user3:",hu_user3,"hu_user4:",hu_user4)
 	hu_state.append(hu_one_state)
 
 ticks2 = time.time()
-print("play_times:",play_times,"no_user_hu:",no_user_hu,"hu_user1:",hu_user1,"hu_user2:",
+print("play_times:",play_times,"no_user_hu:",no_user_hu,"xiaojiao4:", no_hu_xiaojiao,"xiajiao3:",hu_user3_xiajiao,
+	"hu_user1:",hu_user1,"hu_user2:",
 	hu_user2,"hu_user3:",hu_user3,"hu_user4:",hu_user4,"use_time:",ticks2-ticks1,"err_start:",err_start)
 
 #for i in range(0, len(hu_state)):
