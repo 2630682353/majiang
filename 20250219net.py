@@ -37,6 +37,8 @@ class desk:
 			send_data[i+1]['peng'].extend(self.list_player[i].have_peng)
 			send_data[i+1]['gang'].clear()
 			send_data[i+1]['gang'].extend(self.list_player[i].have_gang)
+			send_data[i+1]['money'] = self.list_player[i].money
+			send_data[i+1]['hu'] = self.list_player[i].is_hu
 			if self.list_player[i].is_mo == 1:
 				send_data[i+1]['mo'] = self.list_player[i].mo
 			else:
@@ -68,7 +70,8 @@ class player:
 	yipeng = 0; yipeng_score = 0; nenpeng = [];left_pai_peng = []; hope_score = 0; have_peng = []
 	one_xiang_ting = [];xia_jiao = 0; list_ding = []; nengang = []; have_gang = []
 	score = 0; ding = 't'; value = 100; mo = 0; da = 0;user_desk = desk();max_score_pai_num = 0
-	dui = 0; name = "";hu_pai_left_num = 0;list_dui = [];win_score = 100; money = 1000; human = 0;
+	dui = 0; name = "";hu_pai_left_num = 0;list_dui = [];win_score = 100; money = 0; human = 0;is_hu = 0;
+	
 	is_mo = 0;
 	def __init__(self):
 		self.list_t=[];self.list_w=[];self.list_b=[];self.list_hope_pai=[];self.secend_list_hope_pai = []; self.nenpeng=[]
@@ -545,7 +548,8 @@ class player:
 		if is_qing == 1:
 			total_double += 2
 		total_double+=gang_num
-		return 2**total_double
+		self.money = 2**total_double
+		return self.money
 			
 	def group_shunzi(self, list_y):
 		list_x = copy.copy(list_y)
@@ -1031,10 +1035,10 @@ for x in range(0, 5):
 	count_player = 4
 	hu_one_state.clear()
 	desk1.hu_one_state = hu_one_state
-	send_data = {1:{'shou':[],'river':[],'peng':[],'gang':[], 'mo':0, 'hu':0, 'click_hu':0,'click_peng':0,'click_gang':0},
-	2:{'shou':[],'river':[],'peng':[],'gang':[], 'mo':0, 'hu':0},
-	3:{'shou':[],'river':[],'peng':[],'gang':[], 'mo':0, 'hu':0},
-	4:{'shou':[],'river':[],'peng':[],'gang':[], 'mo':0, 'hu':0},
+	send_data = {1:{'shou':[],'river':[],'peng':[],'gang':[], 'mo':0, 'hu':0, 'click_hu':0,'click_peng':0,'click_gang':0, 'money':0},
+	2:{'shou':[],'river':[],'peng':[],'gang':[], 'mo':0, 'hu':0, 'money':0},
+	3:{'shou':[],'river':[],'peng':[],'gang':[], 'mo':0, 'hu':0, 'money':0},
+	4:{'shou':[],'river':[],'peng':[],'gang':[], 'mo':0, 'hu':0, 'money':0},
 	5:{'hu':[], 'left_num':0}}
 	recv_data = conn.recv(1024)
 	recv_data = socket_test.get_data(recv_data)
@@ -1059,6 +1063,7 @@ for x in range(0, 5):
 				pai = 2
 			print(list_player[index].name," hu le ####################################", " money:",
 				 list_player[index].calculate_money())
+			list_player[index].is_hu = 1
 			hu_one_state.append(list_player[index].name)
 			list_player.pop(index)
 			count_player = count_player -1
@@ -1091,7 +1096,8 @@ for x in range(0, 5):
 							list_player[i].mopai(pai)
 							if list_player[i].score >= 14:
 								print("pai:",pai,"dian pao le #############################",list_player[i].name,
-									" money:",list_player[index].calculate_money())
+									" money:",list_player[i].calculate_money())
+								list_player[i].is_hu = 1
 								list_player[i].show()
 								hu_one_state.append(list_player[i].name)
 								total_hu.append(i)

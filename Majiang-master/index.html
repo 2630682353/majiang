@@ -122,11 +122,11 @@
     </div><div class="fulou"></div></div>
 <div class="say main"></div>
 
-<div class="UI resize">
+<div class="UI resize" style="width: 444px; display: block">
     <span class="chi">チー</span>
-    <span class="peng">ポン</span>
-    <span class="gang">カン</span>
-    <span class="rong">ロン</span>
+    <span class="peng">碰</span>
+    <span class="gang">杠</span>
+    <span class="rong">胡</span>
     <span class="lizhi">リーチ</span>
     <span class="zimo">ツモ</span>
     <span class="pingju">流局</span>
@@ -157,17 +157,20 @@
 
 </body>
  <script >
+    function sendto(num){
+        alert(num)
+    }
 
     function get_t(num){
-        var img='<img class="pai" data-pai="t'+num+'" src="img/s'+num+'.gif">';
+        var img='<img class="pai" data-pai="t'+num+'" src="img/s'+num+'.gif" onclick="sendto('+num+')">';
         return img 
     }
     function get_w(num){
-        var img='<img class="pai" data-pai="w'+num+'" src="img/m'+num+'.gif">';
+        var img='<img class="pai" data-pai="w'+num+'" src="img/m'+num+'.gif" onclick="sendto('+(num+10)+')">';
         return img 
     }
     function get_b(num){
-        var img='<img class="pai" data-pai="b'+num+'" src="img/p'+num+'.gif">';
+        var img='<img class="pai" data-pai="b'+num+'" src="img/p'+num+'.gif" onclick="sendto('+(num+20)+')">';
         return img 
     }
 
@@ -271,7 +274,7 @@
                     for (i=0;i<arr.length;i++)
                         $(".shoupai.main").children(".bingpai").append(get_pai(arr[i]));
                 }
-                else if (pos == 'mo')
+                else if (pos == 'mo' && arr != 0)
                     $(".shoupai.main").children(".bingpai").append(get_mo(arr));
                 else if (pos == 'da') {
                     $(".he.main").children(".dapai").empty();
@@ -294,7 +297,7 @@
                     for (i=0;i<arr.length;i++)
                         $(".shoupai.xiajia").children(".bingpai").append(get_pai(arr[i]));
                 }
-                else if (pos == 'mo')
+                else if (pos == 'mo' && arr != 0)
                     $(".shoupai.xiajia").children(".bingpai").append(get_mo(arr));
                 else if (pos == 'da') {
                     $(".he.xiajia").children(".dapai").empty();
@@ -318,7 +321,7 @@
                     for (i=0;i<arr.length;i++)
                         $(".shoupai.duimian").children(".bingpai").append(get_pai(arr[i]));
                 }
-                else if (pos == 'mo')
+                else if (pos == 'mo'  && arr != 0)
                     $(".shoupai.duimian").children(".bingpai").append(get_mo(arr));
                 else if (pos == 'da') {
                     $(".he.duimian").children(".dapai").empty();
@@ -341,7 +344,7 @@
                     for (i=0;i<arr.length;i++)
                         $(".shoupai.shangjia").children(".bingpai").append(get_pai(arr[i]));
                 }
-                else if (pos == 'mo')
+                else if (pos == 'mo' && arr != 0)
                     $(".shoupai.shangjia").children(".bingpai").append(get_mo(arr));
                 else if (pos == 'da') {
                     $(".he.shangjia").children(".dapai").empty();
@@ -443,6 +446,31 @@
                     show_pai(json_obj["2"]["gang"], 2, 'gang');
                     show_pai(json_obj["3"]["gang"], 3, 'gang');
                     show_pai(json_obj["4"]["gang"], 4, 'gang');
+                    show_pai(json_obj["1"]["mo"], 1, 'mo');
+                    show_pai(json_obj["2"]["mo"], 2, 'mo');
+                    show_pai(json_obj["3"]["mo"], 3, 'mo');
+                    show_pai(json_obj["4"]["mo"], 4, 'mo');
+                    $(".paishu").html(json_obj["5"]["left_num"]);
+                    if (json_obj["1"]["hu"] == 1)
+                        $(".defen .main").css("color","red");
+                    else
+                        $(".defen .main").css("color","white");
+                    $(".defen .main").html(json_obj["1"]["money"]);
+                    if (json_obj["2"]["hu"] == 1)
+                        $(".defen .xiajia").css("color","red");
+                    else
+                        $(".defen .xiajia").css("color","white");
+                    $(".defen .xiajia").html(json_obj["2"]["money"]);
+                    if (json_obj["3"]["hu"] == 1)
+                        $(".defen .duimian").css("color","red");
+                    else
+                        $(".defen .duimian").css("color","white");
+                    $(".defen .duimian").html(json_obj["3"]["money"]);
+                    if (json_obj["4"]["hu"] == 1)
+                        $(".defen .shangjia").css("color","red");
+                    else
+                        $(".defen .shangjia").css("color","white");
+                    $(".defen .shangjia").html(json_obj["4"]["money"]);
                   
                };
                
