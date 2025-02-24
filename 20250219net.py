@@ -5,13 +5,16 @@ import sys
 import random
 import socket_test
 import json
-is_human_play = 0
-is_net = 0
+is_human_play = 1
+human_tuoguan = 1
+is_net = 1
 class desk:
 	list_tuple = []; list_river = []
 	list_ding = []; list_player = []
 	phase = 1;list_total_player = []
-	hu_one_state = [];
+	total_money_list = [0,0,0,0]
+	hu_one_state = []; ming_pai = 0;
+	
 	def show(self):
 		return
 		print("river: ",self.list_river)
@@ -41,6 +44,9 @@ class desk:
 				send_data[i+1]['gang'].extend(self.list_player[i].have_gang)
 				send_data[i+1]['money'] = self.list_player[i].money
 				send_data[i+1]['hu'] = self.list_player[i].is_hu
+				send_data[i+1]['ding'] = self.list_player[i].ding
+				send_data[i+1]['total_money'] = self.total_money_list[i]
+				send_data[i+1]['hu_stat'] = self.list_player[i].hu_stat
 				if self.list_player[i].is_mo == 1:
 					send_data[i+1]['mo'] = self.list_player[i].mo
 				else:
@@ -48,7 +54,23 @@ class desk:
 			send_data[5]['left_num'] = len(self.list_tuple)
 			send_data[5]['hu'].clear()
 			send_data[5]['hu'].extend(self.hu_one_state);
+			send_data[5]['ming_pai'] = self.ming_pai
 			socket_test.send_msg(conn, bytes(json.dumps(send_data), encoding="utf-8"))
+	
+	def cal_total_money(self, is_zimo, win_user_pos, lose_user_pos, current_left_player):
+		if is_zimo == 1:
+			self.total_money_list[win_user_pos] += self.list_player[win_user_pos].money * (len(current_left_player) - 1)
+			for i in range(0, len(current_left_player)):
+				if current_left_player[i].position == win_user_pos:
+					continue
+				self.total_money_list[current_left_player[i].position] -= self.list_player[win_user_pos].money
+		else:
+			self.total_money_list[win_user_pos] += self.list_player[win_user_pos].money
+			self.total_money_list[lose_user_pos] -= self.list_player[win_user_pos].money
+			
+	def chajiao(self):
+		return 0
+				
 def item_to_spec(list_val, type):
 	if (type == 't'):
 		return list_val
@@ -60,11 +82,11 @@ def how_many_type(list1):
 	tt = 0; tw = 0; tb = 0;
 	for pai in list1:
 		if pai < 10:
-			tt+=1
+			tt=1
 		if pai > 10 and pai < 20:
-			tw+=1
+			tw=1
 		if pai > 20:
-			tb+=1
+			tb=1
 	return tt+tw+tb
 
 class player:
@@ -72,8 +94,8 @@ class player:
 	yipeng = 0; yipeng_score = 0; nenpeng = [];left_pai_peng = []; hope_score = 0; have_peng = []
 	one_xiang_ting = [];xia_jiao = 0; list_ding = []; nengang = []; have_gang = []
 	score = 0; ding = 't'; value = 100; mo = 0; da = 0;user_desk = desk();max_score_pai_num = 0
-	dui = 0; name = "";hu_pai_left_num = 0;list_dui = [];win_score = 100; money = 0; human = 0;is_hu = 0;
-	
+	dui = 0; name = "";hu_pai_left_num = 0;list_dui = [];win_score = 100; money = 0; human = 0;is_hu = 0;hu_stat = 0;
+	position = 0;
 	is_mo = 0;
 	def __init__(self):
 		self.list_t=[];self.list_w=[];self.list_b=[];self.list_hope_pai=[];self.secend_list_hope_pai = []; self.nenpeng=[]
@@ -83,7 +105,7 @@ class player:
 		self.list_t.sort(); self.list_w.sort(); self.list_b.sort()
 	def show(self):
 		#return
-		print(self.name,self.list_t,"t",self.list_w,"w",self.list_b,"b","ding_list:",self.list_ding)
+		print(self.name,self.list_t,"t",self.list_w,"w",self.list_b,"b","ding_list:",self.list_ding, "  xiaojiao:", self.xia_jiao)
 		print("score:",self.score, "mo:", self.mo, "ding:",self.ding,"da:",self.da,"  nengpeng:",self.nenpeng,"  have_peng", self.have_peng,
 				"nengang:",self.nengang,"have_gang:",self.have_gang,"hu_left_num:",self.hu_pai_left_num)
 
@@ -188,7 +210,7 @@ class player:
 					da_gupai = gupai; gupai_value = self.pai_value(gupai)
 				self.da = self.dapai_spec(da_gupai)
 		
-			elif self.score >= 8 and self.score < 11 and len(self.nenpeng) < 4 or self.xia_jiao == 0 and self.score >= 11:
+			elif self.score >= 8 and self.score < 11 and len(self.nenpeng) < 4:
 				best_pai,max_score,max_score_pai_num = self.think(2)
 				if best_pai == 0:
 #					gupai = self.guzhang2()
@@ -219,7 +241,19 @@ class player:
 		self.remove_spec(pai)
 		self.remove_spec(pai)
 		self.caculate_score()
-
+	def shou_have_gang(self):
+		have = 0
+		list_shou_pai = copy.copy(self.list_t)
+		for item in self.list_w:
+			list_shou_pai.append(item + 10)
+		for item in self.list_b:
+			list_shou_pai.append(item + 20)
+		list_shou_pai.append(self.mo)
+		for item in self.have_peng:
+			if list_shou_pai.count(item) == 1:
+				have=item
+		del list_shou_pai
+		return have
 	def peng(self,pai):
 		index = 0
 		if self.nenpeng.count(pai) > 0:
@@ -324,9 +358,21 @@ class player:
 		else:
 			return 0
 
+	def check_que(self):
+		if self.ding == 't' and len(self.list_t) == 0:
+			return 1
+		elif self.ding == 'w' and len(self.list_w) == 0:
+			return 1
+		elif self.ding == 'b' and len(self.list_b) == 0:
+			return 1
+		else:
+			return 0
+			
 	def check_xiajiao(self):
 		tmp_player = copy.deepcopy(self)
 		max_score = 0
+		hu_pai_left_num_list = [];
+		self.hu_pai_left_num = 0
 		for j in range(1, 30):
 			if (j < 11 or j == 20) and self.ding == 't':
 				continue
@@ -338,7 +384,11 @@ class player:
 				tmp_player.mopai(j)
 				if tmp_player.score > max_score:
 					max_score = tmp_player.score;
+				
+				if tmp_player.score >= 14:
+					hu_pai_left_num_list.append(j)
 				tmp_player.dapai_spec(j)
+		self.hu_pai_left_num = self.list_cant_see_left(hu_pai_left_num_list)
 		del tmp_player
 		if max_score >= 14:
 			return 1
@@ -525,6 +575,17 @@ class player:
 		if how_many_type(list_r) == 1:
 			is_qing = 1;
 		del list_r
+		
+		list_shou_pai = copy.copy(self.list_t)
+		for item in self.list_w:
+			list_shou_pai.append(item + 10)
+		for item in self.list_b:
+			list_shou_pai.append(item + 20)
+		for item in self.have_peng:
+			if list_shou_pai.count(item) == 1:
+				gang_num+=1
+		del list_shou_pai
+		
 		for x in range(0, 2):
 			if x == 1:
 				cal_list1 = cal_list2
@@ -796,12 +857,14 @@ class player:
 			i = i + 1 
 		return num_dui
 	def how_many_pai(self, pai):
-		if pai < 10:
+		if pai < 10 and self.ding != 't':
 			return self.list_t.count(pai)
-		elif pai < 20:
+		elif pai < 20 and self.ding != 'w':
 			return self.list_w.count(pai - 10)
-		elif pai <30:
+		elif pai <30 and self.ding != 'b':
 			return self.list_b.count(pai - 20)
+		else:
+			return 0
 
 	def pai_value_deep(self,pai):
 		if pai < 10:
@@ -992,7 +1055,7 @@ no_user_hu = 0;no_hu_xiaojiao = [0,0,0,0,0]; hu_user3_xiajiao = [0,0,0,0]
 err_start =0
 
 ticks1 = time.time()
-desk1 = desk()
+desk1 = desk(); desk1.ming_pai = 0;
 list_tmp_tuple = []
 total_hu = []
 hu_state = [[]]
@@ -1001,20 +1064,31 @@ conn = 0;
 if is_net == 1:
 	conn = socket_test.socket_init()
 def conn_handle(conn):
-	recv_data = conn.recv(1024)
-	recv_data = socket_test.get_data(recv_data)
-	print("recv_data:", recv_data)
-	t = 'g'; val = 0
+	t = 0; val = 0
+	while 1 == 1:
+		recv_data = conn.recv(1024)
+		recv_data = socket_test.get_data(recv_data)
+		print("recv_data:", recv_data)
+		json_data = json.loads(recv_data)
+		print("json_data:", json_data["type"])
+		t = json_data["type"]; 
+		val = json_data["val"]
+		if t == 'ming_pai' and desk1.ming_pai == 1:
+			desk1.ming_pai = 0
+		elif t == 'ming_pai' and desk1.ming_pai == 0:
+			desk1.ming_pai = 1
+		else:
+			break
 	return t,val
 
-for x in range(0, 5):
+for x in range(0, 10):
 
-	p1 = player();p1.name = "p1";p2 = player();p2.name = "p2"
-	p3 = player();p3.name = "p3";p4 = player();p4.name = "p4"
+	p1 = player();p1.name = "p1";p1.position = 0;p2 = player();p2.name = "p2"; p2.position = 1;
+	p3 = player();p3.name = "p3";p3.position = 2;p4 = player();p4.name = "p4"; p4.position = 3;
 	list_player = [p1,p2,p3,p4]
 	desk1.list_total_player = [p1,p2,p3,p4]
 	desk1.list_player = [p1,p2,p3,p4]
-
+	
 	list_tmp_tuple.clear()
 	desk1.list_tuple.clear()
 	desk1.list_river.clear()
@@ -1043,13 +1117,37 @@ for x in range(0, 5):
 		print(desk1.list_tuple.count(i))
 	print("\n\n")
 
+	send_data = {1:{'shou_gang':0,'total_money':0,'ding':0,'shou':[],'river':[],'peng':[],'gang':[], 'mo':0, 'hu':0, 'click_hu':0,
+				'click_peng':0,'click_gang':0,'click_ding':0, 'money':0, 'hu_stat':0},
+	2:{'total_money':0,'ding':0,'shou':[],'river':[],'peng':[],'gang':[], 'mo':0, 'hu':0, 'money':0, 'hu_stat':0},
+	3:{'total_money':0,'ding':0,'shou':[],'river':[],'peng':[],'gang':[], 'mo':0, 'hu':0, 'money':0, 'hu_stat':0},
+	4:{'total_money':0,'ding':0,'shou':[],'river':[],'peng':[],'gang':[], 'mo':0, 'hu':0, 'money':0, 'hu_stat':0},
+	5:{'hu':[], 'left_num':0, 'ming_pai':0}}
+	#if is_net == 1:
+	#	conn_handle(conn)
 	for i in range(0,13):
 		for j in range(0,4):
 			list_player[j].mopai(desk1.list_tuple.pop())
-
+	
+	if is_human_play == 1:
+		send_data[1]['click_ding'] = 1
+		desk1.send_desk_info(conn, send_data)
+		t, tmp_pai = conn_handle(conn)
+		send_data[1]['click_ding'] = 0
+		if t == 'ding' and tmp_pai == 1:
+			list_player[0].ding = 't'
+		elif t == 'ding' and tmp_pai == 2:
+			list_player[0].ding = 'w'
+		elif t == 'ding' and tmp_pai == 3:
+			list_player[0].ding = 'b'
+			
+	
 	for i in range(0,4):
-		list_player[i].ding_sure()
-		list_player[i].user_desk = desk1
+		if is_human_play == 1 and i == 0:
+			list_player[i].user_desk = desk1
+		else:
+			list_player[i].ding_sure()
+			list_player[i].user_desk = desk1
 		for j in range(0, 4):
 			list_player[j].list_ding.append(list_player[i].ding)
 
@@ -1058,15 +1156,14 @@ for x in range(0, 5):
 	count_player = 4
 	hu_one_state.clear()
 	desk1.hu_one_state = hu_one_state
-	send_data = {1:{'shou':[],'river':[],'peng':[],'gang':[], 'mo':0, 'hu':0, 'click_hu':0,'click_peng':0,'click_gang':0, 'money':0},
-	2:{'shou':[],'river':[],'peng':[],'gang':[], 'mo':0, 'hu':0, 'money':0},
-	3:{'shou':[],'river':[],'peng':[],'gang':[], 'mo':0, 'hu':0, 'money':0},
-	4:{'shou':[],'river':[],'peng':[],'gang':[], 'mo':0, 'hu':0, 'money':0},
-	5:{'hu':[], 'left_num':0}}
-	if is_net == 1:
-		conn_handle(conn)
-
+	
 	while len(desk1.list_tuple)>0 and len(list_player) > 0:
+		if is_human_play == 1 and len(list_player) <= 1:
+			desk1.ming_pai = 1;
+			desk1.send_desk_info(conn, send_data);
+			conn_handle(conn)
+			desk1.ming_pai = 0;
+			break;
 		if len(desk1.list_tuple) >= 28:
 			desk1.phase = 1
 		else:
@@ -1075,22 +1172,41 @@ for x in range(0, 5):
 		tmp_mopai = desk1.list_tuple.pop();
 		list_player[index].mo = tmp_mopai;
 		list_player[index].is_mo = 1;
-		desk1.send_desk_info(conn, send_data)
-		if is_net == 1:
+		if is_net == 1 and is_human_play == 0:
 			conn_handle(conn)
+		shou_gang = 0
+		if list_player[index].name == 'p1':
+			shou_gang = list_player[index].shou_have_gang()
+		if  shou_gang > 0:
+			send_data[1]['shou_gang'] = shou_gang
+		else:
+			send_data[1]['shou_gang'] = 0
+		
+		desk1.send_desk_info(conn, send_data)
 		list_player[index].mopai(tmp_mopai)
 		list_player[index].show()
 		list_player[index].is_mo = 0;
 		if list_player[index].score >= 14:
+			will_hu = 1
 			if list_player[index].name == 'p1' and is_human_play == 1:
-				pai = 2
-			print(list_player[index].name," hu le ####################################", " money:",
-				 list_player[index].calculate_money())
-			list_player[index].is_hu = 1
-			hu_one_state.append(list_player[index].name)
-			list_player.pop(index)
-			count_player = count_player -1
-			index = index - 1
+				send_data[1]['click_hu'] = 1
+				desk1.send_desk_info(conn, send_data)
+				t, tmp_pai = conn_handle(conn)
+				send_data[1]['click_hu'] = 0
+				if t == 'h' and tmp_pai == 0 or t == 'c':
+					list_player[index].dapai_spec(tmp_mopai)
+					list_player[index].caculate_score()
+					will_hu = 0
+			if will_hu == 1:
+				print(list_player[index].name," hu le ####################################", " money:",
+					 list_player[index].calculate_money())
+				desk1.cal_total_money(1, list_player[index].position, 0, list_player)
+				list_player[index].is_hu = 1
+				list_player[index].hu_stat = 5
+				hu_one_state.append(list_player[index].name)
+				list_player.pop(index)
+				count_player = count_player -1
+				index = index - 1
 		else:
 			#str = input("\n")
 			pai = list_player[index].find_nen_gang()
@@ -1100,11 +1216,25 @@ for x in range(0, 5):
 			else:
 				go_out = 0
 				while 1 == 1:
-					if is_human_play == 1 and list_player[index].name == 'p1':
+					if is_human_play == 1 and list_player[index].name == 'p1' and human_tuoguan == 0 and list_player[index].check_que() == 1:
 						t,pai = conn_handle(conn)
-						list_player[index].dapai_spec(pai)
+						if t == 'shou_gang' and list_player[index].have_peng.count(pai) == 1:
+							list_player[index].have_gang.append(pai)
+							list_player[index].have_peng.remove(pai)
+							list_player[index].dapai_spec(pai)
+							index = index - 1
+							break;
+						else:
+							list_player[index].dapai_spec(pai)
+							desk1.send_desk_info(conn, send_data)
+							
 					else:
 						pai = list_player[index].dapai()
+						if list_player[index].have_peng.count(pai) == 1:
+							list_player[index].have_gang.append(pai)
+							list_player[index].have_peng.remove(pai)
+							index = index - 1
+							break
 					list_player[index].xia_jiao = list_player[index].check_xiajiao()
 					list_player[index].find_nen_gang()
 					desk1.list_river.append(pai)
@@ -1112,7 +1242,11 @@ for x in range(0, 5):
 					list_player[index].show()
 					desk1.show()
 					desk1.send_desk_info(conn, send_data)
-					if is_net == 1:
+					if list_player[index].name == 'p1' and list_player[index].check_que() == 1:
+						human_tuoguan = 0
+					if is_human_play == 1:
+						time.sleep(1)
+					if is_net == 1 and is_human_play == 0:
 						conn_handle(conn)
 					if len(list_player) > 1:
 						total_hu.clear()
@@ -1125,13 +1259,20 @@ for x in range(0, 5):
 									send_data[1]['click_hu'] = 1
 									desk1.send_desk_info(conn, send_data)
 									t, tmp_pai = conn_handle(conn)
-									if t == 'h' and tmp_pai == 0:
+									send_data[1]['click_hu'] = 0
+									if t == 'h' and tmp_pai == 0 or t == 'c':
 										list_player[i].dapai_spec(pai)
 										list_player[i].caculate_score()
 										continue
+								if list_player[i].hu_pai_left_num >= 5 and list_player[i].name != 'p1':
+									list_player[i].dapai_spec(pai)
+									list_player[i].caculate_score()
+									continue
 								print("pai:",pai,"dian pao le #############################",list_player[i].name,
 									" money:",list_player[i].calculate_money())
+								desk1.cal_total_money(0, list_player[i].position, list_player[index].position, [])
 								list_player[i].is_hu = 1
+								list_player[i].hu_stat = list_player[index].position + 1
 								list_player[i].show()
 								hu_one_state.append(list_player[i].name)
 								total_hu.append(i)
@@ -1153,15 +1294,17 @@ for x in range(0, 5):
 						for i in range(0, count_player):
 							if index == i:
 								continue
-							if list_player[i].name == 'p1' and is_human_play == 1:
+							if list_player[i].name == 'p1' and is_human_play == 1 and human_tuoguan == 0:
 								if list_player[i].how_many_pai(pai) == 3:
 									send_data[1]['click_gang'] = 1
 									desk1.send_desk_info(conn, send_data)
 									t, tmp_pai = conn_handle(conn)
+									send_data[1]['click_gang'] = 0
 									if t == 'g' and tmp_pai == 1:
 										list_player[i].human_gang(pai)
 										print("pai:",pai,"bei gang le **************************",list_player[i].name)
 										list_player[i].show()
+										desk1.send_desk_info(conn, send_data)
 										go_out = 1
 										index = i - 1
 										break
@@ -1169,6 +1312,7 @@ for x in range(0, 5):
 										list_player[i].human_peng(pai)
 										print("pai:",pai,"bei peng le **************************",list_player[i].name)
 										list_player[i].show()
+										desk1.send_desk_info(conn, send_data)
 										index = i	
 										go_out = 0
 										break
@@ -1178,10 +1322,12 @@ for x in range(0, 5):
 									send_data[1]['click_peng'] = 1
 									desk1.send_desk_info(conn, send_data)
 									t, tmp_pai = conn_handle(conn)
+									send_data[1]['click_peng'] = 0
 									if t == 'p' and tmp_pai == 1:
 										list_player[i].human_peng(pai)
 										print("pai:",pai,"bei peng le **************************",list_player[i].name)
 										list_player[i].show()
+										desk1.send_desk_info(conn, send_data)
 										index = i	
 										go_out = 0
 										break;
@@ -1190,12 +1336,14 @@ for x in range(0, 5):
 							if pai == list_player[i].dian_gang(pai):
 								print("pai:",pai,"bei gang le **************************",list_player[i].name)
 								list_player[i].show()
+								desk1.send_desk_info(conn, send_data)
 								go_out = 1
 								index = i - 1
 								break
 							if pai == list_player[i].peng(pai):
 								print("pai:",pai,"bei peng le **************************",list_player[i].name)
 								list_player[i].show()
+								desk1.send_desk_info(conn, send_data)
 								index = i	
 								go_out = 0
 								break
@@ -1205,6 +1353,13 @@ for x in range(0, 5):
 		index = index +1
 		if index >= count_player:
 			index = 0
+			
+		if len(desk1.list_tuple) == 0:
+			desk1.ming_pai = 1
+			desk1.send_desk_info(conn, send_data)
+			t, tmp_pai = conn_handle(conn)
+			desk1.ming_pai = 0
+			desk1.chajiao()
 		#str = input("\n")
 
 	if len(list_player) == 0:
