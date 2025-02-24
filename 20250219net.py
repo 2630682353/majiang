@@ -95,7 +95,7 @@ class player:
 	one_xiang_ting = [];xia_jiao = 0; list_ding = []; nengang = []; have_gang = []
 	score = 0; ding = 't'; value = 100; mo = 0; da = 0;user_desk = desk();max_score_pai_num = 0
 	dui = 0; name = "";hu_pai_left_num = 0;list_dui = [];win_score = 100; money = 0; human = 0;is_hu = 0;hu_stat = 0;
-	position = 0;
+	position = 0; want_qing = 0;
 	is_mo = 0;
 	def __init__(self):
 		self.list_t=[];self.list_w=[];self.list_b=[];self.list_hope_pai=[];self.secend_list_hope_pai = []; self.nenpeng=[]
@@ -202,30 +202,44 @@ class player:
 		elif self.ding == 'b' and len(self.list_b) > 0:
 			self.da = self.list_b.pop()+20
 		else:
-			gupai_list = self.guzhang_smart()
-			da_gupai = 0; gupai_value = 100;
-			if len(gupai_list) > 0:
-				for gupai in gupai_list:
-					self.pai_value(gupai) < gupai_value
-					da_gupai = gupai; gupai_value = self.pai_value(gupai)
-				self.da = self.dapai_spec(da_gupai)
-		
-			elif self.score >= 8 and self.score < 11 and len(self.nenpeng) < 4:
-				best_pai,max_score,max_score_pai_num = self.think(2)
-				if best_pai == 0:
-#					gupai = self.guzhang2()
-#					if gupai > 0:
-#						best_pai = gupai
-#					else:
-					best_pai,max_score,max_score_pai_num = self.think(1)
-				self.da = self.dapai_spec(best_pai)
-				self.xia_jiao = self.check_xiajiao()
+			want_qing = self.check_want_qing()
+			if want_qing == 't' and self.ding == 'w' and len(self.list_b) > 0:
+				self.da = self.list_b.pop() + 20
+			elif want_qing == 't' and self.ding == 'b' and len(self.list_w) > 0:
+				self.da = self.list_w.pop() + 10
+			elif want_qing == 'w' and self.ding == 't' and len(self.list_t) > 0:
+				self.da = self.list_t.pop()
+			elif want_qing == 'w' and self.ding == 'b' and len(self.list_b) > 0:
+				self.da = self.list_b.pop() + 20
+			elif want_qing == 'b' and self.ding == 't' and len(self.list_t) > 0:
+				self.da = self.list_t.pop()
+			elif want_qing == 'b' and self.ding == 'w' and len(self.list_w) > 0:
+				self.da = self.list_w.pop() + 10
 			else:
-				best_pai,max_score,max_score_pai_num = self.think(1)
-				if max_score >=14:
-					self.xia_jiao = 1
-					self.max_score_pai_num = max_score_pai_num
-				self.da = self.dapai_spec(best_pai)
+				gupai_list = self.guzhang_smart()
+				da_gupai = 0; gupai_value = 100;
+				if len(gupai_list) > 0:
+					for gupai in gupai_list:
+						self.pai_value(gupai) < gupai_value
+						da_gupai = gupai; gupai_value = self.pai_value(gupai)
+					self.da = self.dapai_spec(da_gupai)
+			
+				elif self.score >= 8 and self.score < 11 and len(self.nenpeng) < 4:
+					best_pai,max_score,max_score_pai_num = self.think(2)
+					if best_pai == 0:
+	#					gupai = self.guzhang2()
+	#					if gupai > 0:
+	#						best_pai = gupai
+	#					else:
+						best_pai,max_score,max_score_pai_num = self.think(1)
+					self.da = self.dapai_spec(best_pai)
+					self.xia_jiao = self.check_xiajiao()
+				else:
+					best_pai,max_score,max_score_pai_num = self.think(1)
+					if max_score >=14:
+						self.xia_jiao = 1
+						self.max_score_pai_num = max_score_pai_num
+					self.da = self.dapai_spec(best_pai)
 		self.score=self.caculate_score()
 		return self.da
 	
@@ -367,7 +381,39 @@ class player:
 			return 1
 		else:
 			return 0
-			
+	def check_want_qing(self):
+		want_qing = 0;
+		p_t = 0; p_w = 0; p_b = 0
+		for item in self.have_peng:
+			if item < 10:
+				p_t += 1
+			elif item < 20:
+				p_w += 1
+			else:
+				p_b += 1
+				
+		for item in self.have_gang:
+			if item < 10:
+				p_t += 1
+			elif item < 20:
+				p_w += 1
+			else:
+				p_b += 1
+		
+		total_t = len(self.list_t) + p_t * 3
+		total_w = len(self.list_w) + p_w * 3
+		total_b = len(self.list_b) + p_b * 3
+		
+		step = 4
+		for i in range(0, 5):
+			if total_t >= 9 + i and self.list_ding.count('t') >= 2 and len(self.user_desk.list_tuple) > (30 - i*step):
+				return 't'
+			if total_w >= 9 + i and self.list_ding.count('w') >= 2 and len(self.user_desk.list_tuple) > (30 - i*step):
+				return 'w'
+			if total_b >= 9 + i and self.list_ding.count('b') >= 2 and len(self.user_desk.list_tuple) > (30 - i*step):
+				return 'b'
+		return 0
+		
 	def check_xiajiao(self):
 		tmp_player = copy.deepcopy(self)
 		max_score = 0
@@ -1264,7 +1310,7 @@ for x in range(0, 10):
 										list_player[i].dapai_spec(pai)
 										list_player[i].caculate_score()
 										continue
-								if list_player[i].hu_pai_left_num >= 5 and list_player[i].name != 'p1':
+								if list_player[i].hu_pai_left_num >= 4.6 and list_player[i].name != 'p1':
 									list_player[i].dapai_spec(pai)
 									list_player[i].caculate_score()
 									continue
